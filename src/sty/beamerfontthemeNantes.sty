@@ -1,0 +1,38 @@
+
+
+% SPDX-License-Identifier: CC-BY-SA-4.0
+% Author: Matthieu Perrin
+ 
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{beamerfontthemeNantes}[2025/06/09 Font settings for the Nantes beamer theme]
+ 
+\RequirePackage{tgheros}
+ 
+\mode<presentation>
+ 
+\renewcommand{\sfdefault}{qhv}
+\renewcommand{\ttdefault}{lmtt}
+
+\setbeamerfont{title}{family=\fontfamily{lmr}, size=\Huge, series=\bfseries, shape=\itshape}
+\setbeamerfont{subtitle}{family=\fontfamily{lmr}, size=\Large, series=\bfseries,   shape=\normalshape}
+\setbeamerfont{author}{size=\large}
+\setbeamerfont{date}{size=\large}
+ 
+\setbeamerfont{frametitle}{family=\fontfamily{lmr}, size=\huge,  series=\bfseries, shape=\itshape}
+\setbeamerfont{framesubtitle}{family=\fontfamily{lmr}, size=\Large, series=\bfseries, shape=\normalshape}
+ 
+\setbeamerfont{block title}{size=\Large, shape=\itshape}
+ 
+\setbeamerfont{section in toc}{family=\fontfamily{lmr}, size=\LARGE,  series=\bfseries, shape=\itshape}
+\setbeamerfont{subsection in toc}{size=\Large}
+
+\setbeamerfont{headline}{size=\scriptsize}
+\setbeamerfont{footline}{size=\scriptsize}
+
+\setbeamerfont{footnote}{size=\scriptsize}
+
+
+\selectfont
+\mode<all>
+ 
+\endinput

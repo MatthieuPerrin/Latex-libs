@@ -1,0 +1,17 @@
+% SPDX-License-Identifier: CC-BY-SA-4.0
+% Author: Matthieu Perrin
+
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{mathcommands}[2024/06/16 Configuration file for math packages and commands]
+
+\RequirePackage{amsmath, amssymb, amsfonts}
+\RequirePackage{mathtools}
+\RequirePackage{mathrsfs}
+\RequirePackage{stmaryrd}
+
+\providecommand\eqdef{\stackrel{\text{def}}{=}}
+\providecommand\existsunique{\exists\mathpunct{\textnormal{!}}} 
+\providecommand\unique{\exists\mathpunct{\textnormal{?}}}
+\providecommand\mathstring[1]{``#1''}
+
+\endinput

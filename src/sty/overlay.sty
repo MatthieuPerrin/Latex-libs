@@ -1,0 +1,44 @@
+% SPDX-License-Identifier: CC-BY-SA-4.0
+% Author: Matthieu Perrin
+
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{overlay}[2025/06/16 Package for advanced overlay management]
+
+\RequirePackage{beamerbaseoverlay}
+\RequirePackage{xstring}
+
+\let\overlays@orig@only=\only
+\let\overlays@orig@uncover=\uncover
+\let\overlays@orig@alt=\alt
+\let\overlays@orig@temporal=\temporal
+\let\overlays@orig@onlyif=\onlyif
+\let\overlays@orig@visible=\visible
+\let\overlays@orig@invisible=\invisible
+\let\overlays@orig@emph=\emph
+
+\newcommand<>\overlays@ifhandout[2]{%
+  \ifblank{#3}{#1}{%
+    \IfSubStr{#3}{handout}{#1}{%
+      \@ifclasswith{beamer}{handout}{#2}{#1}%
+    }%
+  }%
+}%
+ 
+\renewcommand<>\only   [1]{\overlays@ifhandout#2{\overlays@orig@only   #2{#1}}{}}
+\renewcommand<>\uncover[1]{\overlays@ifhandout#2{\overlays@orig@uncover#2{#1}}{}}
+
+\newcommand\overlays@text{}
+ 
+\newcommand<>\on[1]{\only#2{\renewcommand\overlays@text{#1}}}
+ 
+\newcommand<>\oneof[2][]{%
+  \begingroup%
+  \uncover#3{%
+    \renewcommand\overlays@text{#1}%
+    #2%
+    \overlays@text%
+  }%
+  \endgroup
+}
+
+\endinput

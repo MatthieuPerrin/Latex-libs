@@ -1,0 +1,201 @@
+% SPDX-License-Identifier: CC-BY-SA-4.0
+% Author: Matthieu Perrin
+
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{beamerouterthemeNantes}[2025/06/09 Settings for outer parts of the Nantes beamer theme]
+
+
+\RequirePackage{calc}
+\RequirePackage{etoolbox}
+\RequirePackage{tikz}
+\usetikzlibrary{fadings}
+\tikzfading[name=fade out,inner color=transparent!0,outer color=transparent!100]
+
+
+\beamertemplatenavigationsymbolsempty
+
+
+
+
+
+\def\sectionAtBeginningFrame{}
+\DeclareOptionBeamer{sectionOnTitle}{\def\sectionAtBeginningFrame{%
+    \ifx\insertsectionhead\empty\else%
+        {\color{black!50}\thesection. \insertsectionhead ~ -- ~}%
+    \fi%
+  }}
+\ProcessOptionsBeamer
+
+\mode<presentation>
+
+
+\defbeamertemplate*{headline}{Nantes}[1][]{%
+  \def\Nantes@headline@height{1.6\baselineskip}
+  \leavevmode%
+  \begin{beamercolorbox}[wd=\paperwidth,ht=\Nantes@headline@height,dp=0pt]{headline}%
+    \begin{tikzpicture}
+      \begin{scope}
+        \clip (0, 0) rectangle (\paperwidth,\Nantes@headline@height);
+        \node[anchor=base west] at (1ex,          .5\baselineskip) {\Roman{section}.~\insertsectionhead{}};
+        \node[anchor=base west] at (.5\paperwidth,.5\baselineskip) {\insertsubsectionnumber{}.~\insertsubsectionhead{}};
+
+        \ifnumequal{\sectiontotalframes}{0}{}{
+          \foreach \x in {0,...,\the\numexpr\insertsectionendframe-\insertsectionstartframe-1\relax}{
+            \fill[rounded corners=.2, headline.bg!40!headline.fg] (\textwidth*\x/\sectiontotalframes,\Nantes@headline@height)
+            +(.02\textwidth/\sectiontotalframes,0) rectangle +(.98\textwidth/\sectiontotalframes,-.02);
+            
+            \ifnum\x<\the\numexpr\insertsubsectionendframe-\insertsectionstartframe\relax
+            \ifnum\x<\the\numexpr\insertsubsectionstartframe-\insertsectionstartframe\relax\else
+            \fill[rounded corners=.2,headline.fg] (\textwidth*\x/\sectiontotalframes,\Nantes@headline@height)
+            +(.02\textwidth/\sectiontotalframes,0) rectangle +(.98\textwidth/\sectiontotalframes,-.02);
+            \fi\fi
+            
+            \ifnum\x=\the\numexpr\insertframenumber-\insertsectionstartframe\relax
+            \fill[rounded corners=.5,headline.fg] (\x*\textwidth/\sectiontotalframes,\Nantes@headline@height)
+            ++(.5\textwidth/\sectiontotalframes,-.015) +(-.1,-.005) -- +(-.05,-.01) -- +(0,-.05) -- +(.05,-.01) -- +(.1,-.005);
+            \fi
+
+%            \node at (\x*\textwidth/\sectiontotalframes,\Nantes@headline@height)
+%%            (\textwidth*\x/\sectiontotalframes, \Nantes@headline@height)
+%                 {\hyperlink{slide@\number\numexpr\insertsectionstartframe+\x\relax}{%
+%                     \begin{tikzpicture}
+%                       \fill[red] (0,0) rectangle (0.1, 0.1);
+%                     \end{tikzpicture}
+%                 }};
+%            
+
+            
+          }
+        }
+      \end{scope}
+    \end{tikzpicture}
+  \end{beamercolorbox}%
+}
+
+%\defbeamertemplate*{headline}{Nantes}[1][]{
+%  \leavevmode
+%%  \hbox{%
+%    \ifx\insertsection\empty%
+%    \vphantom{\hbox{\vrule height14pt}}
+%    \begin{beamercolorbox}[wd=\paperwidth,ht=2.25ex,dp=1.5ex,center]{white}
+%    \end{beamercolorbox}%
+%    \else%
+%    \begin{beamercolorbox}[wd=\paperwidth,ht=3ex,dp=1.8ex,center]{headline}
+%      %\begin{beamercolorbox}[wd=\paperwidth,ht=2.25ex,dp=1.5ex,center]{headline}%
+%%      ~\\
+%%      \vspace{-1.3mm}
+%%      \vphantom{\hbox{\vrule height14pt}}
+%      %\vphantom{\rule{0pt}{2.8ex}}%
+%      \begin{tikzpicture}
+%%        %\path (0,0);
+%%        %\vphantom{\rule{0pt}{2.8ex}}
+%%        
+%%        \draw[headline.bg] (0,2.5ex) rectangle +(\textwidth,-4ex);
+%%        
+%%        \foreach \x in {0,...,\the\numexpr\insertsectionendframe-\insertsectionstartframe-1\relax}{
+%% 
+%%          \ifnumequal{\sectiontotalframes}{0}{%
+%%            \fill[rounded corners=.2,headline.fg] (0,2.25ex) +(.02\textwidth,0) rectangle +(.98\textwidth,-.02);
+%%          }{
+%%            \fill[rounded corners=.2,headline.bg!40!headline.fg] (\textwidth*\x/\sectiontotalframes,2.25ex) +(.02\textwidth/\sectiontotalframes,0) rectangle +(.98\textwidth/\sectiontotalframes,-.02);
+%% 
+%%            \ifnum\x<\the\numexpr\insertsubsectionendframe-\insertsectionstartframe\relax
+%%            \ifnum\x<\the\numexpr\insertsubsectionstartframe-\insertsectionstartframe\relax\else
+%%            \fill[rounded corners=.2,headline.fg] (\textwidth*\x/\sectiontotalframes,2.25ex) +(.02\textwidth/\sectiontotalframes,0) rectangle +(.98\textwidth/\sectiontotalframes,-.02);
+%%            \fi\fi
+%% 
+%%            \ifnum\x=\the\numexpr\insertframenumber-\insertsectionstartframe\relax
+%%            \fill[rounded corners=.5,headline.fg] (\x*\textwidth/\sectiontotalframes,2.25ex) ++(.5\textwidth/\sectiontotalframes,-.015) +(-.1,-.005) -- +(-.05,-.01) -- +(0,-.05) -- +(.05,-.01) -- +(.1,-.005);
+%%            \fi
+%%          }
+%%        }
+%% 
+%        \ifx\insertsection\empty\else
+%        \draw (0,0) node[right]{\hspace*{2ex}\usebeamerfont{section in head/foot}\Roman{section}.~\insertsectionhead{}};
+%        \fi
+%        \ifx\insertsubsection\empty\else
+%        \draw (.5\textwidth,0) node[right]{\usebeamerfont{subsection in head/foot}\insertsubsectionnumber{}.~\insertsubsectionhead{}};
+%        \fi
+%      \end{tikzpicture}
+%    \end{beamercolorbox}%
+%    \fi%
+%}
+
+\defbeamertemplate*{frametitle}{Nantes}[1][]{
+  \ifx\insertsection\empty
+  \vspace{-1.6ex}
+  \else\fi%
+  \nointerlineskip%
+  \begin{beamercolorbox}[wd=\paperwidth,dp=1ex]{frametitle}
+    \hspace*{1ex}
+    \sectionAtBeginningFrame%
+    \vphantom{\hbox{\vrule height14pt}}\insertframetitle 
+    \ifx\insertframesubtitle\empty\else%
+    \vspace*{.2ex}\\\hspace*{3ex}\usebeamerfont{framesubtitle}\usebeamercolor{framesubtitle}\insertframesubtitle%
+    \fi%
+    \hspace*{1ex}
+  \end{beamercolorbox}
+}
+
+\defbeamertemplate*{footline}{Nantes}[1][]{%
+  \leavevmode%
+  \hbox{%
+    \begin{beamercolorbox}[wd=.2\paperwidth,ht=\baselineskip,dp=.5\baselineskip,left]{footline}
+      \hspace*{1ex}\insertshortauthor{}
+    \end{beamercolorbox}%
+    \begin{beamercolorbox}[wd=.6\paperwidth,ht=\baselineskip,dp=.5\baselineskip,center]{footline}
+      \insertshorttitle{}
+    \end{beamercolorbox}%
+    \begin{beamercolorbox}[wd=.2\paperwidth,ht=\baselineskip,dp=.5\baselineskip,right]{footline}
+      \insertframenumber{} / \inserttotalframenumber\hspace*{1ex}
+    \end{beamercolorbox}%
+  }
+}
+
+
+\newcommand\subsectionendframenameinaux{ss@totalsubsectionframes-\arabic{section}-\arabic{subsection}}
+\newcommand\sectionendframenameinaux{s@totalsectionframes-\arabic{section}}
+\edef\insertsectionstartframe{0}
+\edef\insertsubsectionstartframe{0}
+\let\oldpart\part
+\let\oldsection\section
+\let\oldsubsection\subsection
+
+\newcounter{partnumber}
+\setcounter{partnumber}{0}
+
+\renewcommand\part[1]{%
+  \edef\insertsectionstartframe{\the\numexpr\arabic{framenumber}+1\relax}%
+  \edef\insertsubsectionstartframe{\the\numexpr\arabic{framenumber}+1\relax}%
+  \immediate\write\@auxout{\global\noexpand\@namedef{\sectionendframenameinaux}{\the\numexpr\arabic{framenumber}+1\relax}}%
+  \immediate\write\@auxout{\global\noexpand\@namedef{\subsectionendframenameinaux}{\the\numexpr\arabic{framenumber}+1\relax}}%
+  \stepcounter{partnumber}
+  \oldpart{#1}
+}
+
+\renewcommand{\section}{%
+  \edef\insertsectionstartframe{\the\numexpr\arabic{framenumber}+1\relax}%
+  \edef\insertsubsectionstartframe{\the\numexpr\arabic{framenumber}+1\relax}%
+  \immediate\write\@auxout{\global\noexpand\@namedef{\sectionendframenameinaux}{\the\numexpr\arabic{framenumber}+1\relax}}%
+  \immediate\write\@auxout{\global\noexpand\@namedef{\subsectionendframenameinaux}{\the\numexpr\arabic{framenumber}+1\relax}}%
+  \oldsection%
+}
+\renewcommand{\subsection}{%
+  \edef\insertsubsectionstartframe{\the\numexpr\arabic{framenumber}+1\relax}%
+  \immediate\write\@auxout{\global\noexpand\@namedef{ss@totalsubsectionframes-\arabic{section}-\arabic{subsection}}{\the\numexpr\arabic{framenumber}+1\relax}}%
+  \oldsubsection%
+}
+\AtEndDocument{%
+  \immediate\write\@auxout{\global\noexpand\@namedef{s@totalsectionframes-\arabic{section}}{\the\numexpr\arabic{framenumber}+1\relax}}%
+  \immediate\write\@auxout{\global\noexpand\@namedef{ss@totalsubsectionframes-\arabic{section}-\arabic{subsection}}{\the\numexpr\arabic{framenumber}+1\relax}}%
+}
+
+\newcommand\insertsubsectionendframe{\@ifundefined{\subsectionendframenameinaux}{0}{\csname\subsectionendframenameinaux\endcsname}}
+\newcommand\insertsectionendframe{\@ifundefined{\sectionendframenameinaux}{0}{\csname\sectionendframenameinaux\endcsname}}
+\newcommand\sectiontotalframes{\number\numexpr\insertsectionendframe-\insertsectionstartframe}%
+\newcommand\subsectiontotalframes{\number\numexpr\insertsubsectionendframe-\insertsubsectionstartframe}%
+\newcommand\frameinsection{\number\numexpr\insertframenumber-\insertsectionstartframe+1}%
+\newcommand\frameinsubsection{\number\numexpr\insertframenumber-\insertsubsectionstartframe+1}%
+
+\mode<all>
+\endinput

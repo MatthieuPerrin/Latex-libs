@@ -1,0 +1,24 @@
+% SPDX-License-Identifier: CC-BY-SA-4.0
+% Author: Matthieu Perrin
+
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{beamerthemeNantes}[2025/06/09 Settings for the Nantes beamer theme]
+
+\newif\ifNantes@showsectionpage \Nantes@showsectionpagefalse
+
+\DeclareOptionBeamer{sectionpage}{\Nantes@showsectionpagetrue}
+
+\ProcessOptionsBeamer
+
+\mode<presentation>
+\useinnertheme{Nantes}
+\useoutertheme{Nantes}
+\usecolortheme{Nantes}
+\usefonttheme{Nantes}
+\mode<all>
+
+
+\providecommand{\showsectionpages}{\Nantes@showsectionpagetrue}
+\providecommand{\hidesectionpages}{\Nantes@showsectionpagefalse}
+
+\endinput

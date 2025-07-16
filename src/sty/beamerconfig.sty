@@ -1,0 +1,73 @@
+% SPDX-License-Identifier: CC-BY-SA-4.0
+% Author: Matthieu Perrin
+
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{beamerconfig}[2024/06/24 Configuration of the beamer templates]
+
+
+\RequirePackage{iftex}
+\ifPDFTeX
+  \RequirePackage[T1]{fontenc}
+  \RequirePackage[utf8]{inputenc}
+\fi
+
+\RequirePackage{overlay}
+
+\RequirePackage{mathcommands}
+\RequirePackage{frameconfig} 
+
+\RequirePackage[normalem]{ulem}
+\RequirePackage{fontawesome, pifont, MnSymbol}
+\providecommand\cmark{\example{\text{\ding{51}}}}
+\providecommand\xmark{\alert{\text{\ding{55}}}}
+
+\RequirePackage{dominos}
+\tikzset{
+  domino top/.style={fill=structure!20},
+  domino bottom/.style={fill=example!20},
+}
+
+\RequirePackage{statemachines}
+\colorlet{sm@head@color}{alert}
+\colorlet{sm@fill@alert}{alert}
+\colorlet{sm@fill@example}{example}
+\colorlet{sm@fill@structure}{structure}
+
+\RequirePackage{algos}
+\RequirePackage{citations}
+
+\RequirePackage{tabularx}
+\RequirePackage{multirow}
+
+\RequirePackage{graphicx}
+
+
+
+
+
+
+
+
+
+
+
+%\RequirePackage{tikz}
+\usetikzlibrary{shapes}
+
+\usetikzlibrary{arrows,automata,shadows}
+\usetikzlibrary{calc}
+\usetikzlibrary{decorations.markings}
+\usetikzlibrary{decorations.pathmorphing}
+\usetikzlibrary{decorations.pathreplacing}
+\usetikzlibrary{fadings}
+\usetikzlibrary{patterns}
+\usetikzlibrary{positioning}
+\usetikzlibrary{patterns.meta}
+%\tikzstyle directed=[postaction={decorate,decoration={markings, mark=at position .65 with {\arrow{latex}}}}]
+
+
+
+\mode<all>
+\endinput
+
+

@@ -1,0 +1,187 @@
+% SPDX-License-Identifier: CC-BY-SA-4.0
+% Author: Matthieu Perrin
+
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{frameconfig}[2025/06/16 Package for making nice frames with tikz]
+
+\RequirePackage{tikz}
+\usetikzlibrary{positioning}
+\usetikzlibrary{tikzmark,fit,backgrounds}
+
+\RequirePackage{etoolbox} 
+\RequirePackage{environ}
+
+\newcommand\tf@if@empty[3]{\if#1\ \ #2\else#3\fi}
+
+\newcommand\tf@alert@hook{}
+\newcounter{tf@alert@cpt}
+
+\NewDocumentCommand{\tf@alert@highlight}{O{alert!20}O{1}}{%
+  \fill[#1, rounded corners]([yshift=1.8ex,xshift=-.5ex]pic cs:start#2) rectangle ([yshift=-.5ex,xshift=.5ex]pic cs:end#2);
+}
+
+\newcommand<>\tfBg[2]{%
+  \stepcounter{tf@alert@cpt}%
+  \tikzmark{start\thetf@alert@cpt}#2\tikzmark{end\thetf@alert@cpt}%
+  \only#3{%
+    \gappto\tf@alert@hook{\tf@alert@highlight[}%
+      \xappto\tf@alert@hook{#1}%
+      \gappto\tf@alert@hook{][}%
+      \xappto\tf@alert@hook{\thetf@alert@cpt}%
+      \gappto\tf@alert@hook{]}%
+  }%
+}
+
+
+\newcommand<>\tfAlert[1]{\tfBg#2{alert!20}{#1}}
+\newcommand<>\tfStructure[1]{\tfBg#2{structure!20}{#1}}
+\newcommand<>\tfExample[1]{\tfBg#2{example!20}{#1}}
+
+\tikzset{tz@style@tikz@added/.style={},}
+\tikzset{tz@style@node@added/.style={},}
+\tikzset{tz@style@tikz/.style={remember picture,overlay,shift={(current page.center)}}}
+\tikzset{tz@style@node/.style={},}
+
+\newcommand\tf@node@x{0}
+\newcommand\tf@node@y{-.35}
+\newcommand\tf@node@scale{1}
+
+\define@key{tf@node@options}{x}{\renewcommand\tf@node@x{#1}}
+\define@key{tf@node@options}{y}{\renewcommand\tf@node@y{#1}}
+\define@key{tf@node@options}{scale}{\renewcommand\tf@node@scale{#1}}
+
+\define@key{tf@node@options}{text}[true]{%
+  \renewcommand\tf@node@x{0}%
+  \tikzset{tz@style@node@added/.append style={align=left, text width=\textwidth}}
+}
+\define@key{tf@node@options}{width}{%
+  \tikzset{tz@style@node@added/.append style={align=left, text width=#1}}
+}
+\define@key{tf@node@options}{top}[0]{
+  \renewcommand\tf@node@y{3.5cm - #1}%
+  \tikzset{tz@style@node@added/.append style={anchor=north}}
+}
+\define@key{tf@node@options}{bottom}[0]{
+  \renewcommand\tf@node@y{-4.2cm + #1}%
+  \tikzset{tz@style@node@added/.append style={anchor=south}}
+}
+\define@key{tf@node@options}{left}{
+  \renewcommand\tf@node@x{.5 * #1 - \textwidth/2}%
+  \tikzset{tz@style@node@added/.append style={align=left, text width=#1}}
+}
+\define@key{tf@node@options}{right}{
+  \renewcommand\tf@node@x{\textwidth/2 - .5 * #1}%
+  \tikzset{tz@style@node@added/.append style={align=left, text width=#1}}
+}
+\define@key{tf@node@options}{center}{
+  \renewcommand\tf@node@x{0}%
+  \tikzset{tz@style@node@added/.append style={align=left, text width=#1}}
+}
+\define@key{tf@node@options}{anchor}{
+  \tikzset{tz@style@node@added/.append style={anchor=#1}}
+}
+\define@key{tf@node@options}{align}{
+  \tikzset{tz@style@node@added/.append style={align=#1}}
+}
+
+\newcommand<>\tf[2][]{%
+  \only#3{%
+    \begingroup%
+    \tikzset{tz@style@tikz@added/.style={},}%
+    \tikzset{tz@style@node@added/.style={},}%
+    \setkeys{tf@node@options}{#1}%
+    \renewcommand{\tf@alert@hook}{}%
+    \begin{tikzpicture}[tz@style@tikz]%
+      \node[tz@style@node, tz@style@node@added,scale=\tf@node@scale] at (\tf@node@x, \tf@node@y) {#2};%
+      \begin{scope}[on background layer]%
+        \tf@alert@hook%
+      \end{scope}%
+    \end{tikzpicture}%
+    \endgroup%
+  }%
+}
+
+\newcommand<>\tfBlock[3][]{\tf#4[text,#1]{\begin{block}{#2}#3\end{block}}}
+\newcommand<>\tfAlertBlock[3][]{\tf#4[text,#1]{\begin{alertblock}{#2}#3\end{alertblock}}}
+\newcommand<>\tfExampleBlock[3][]{\tf#4[text,#1]{\begin{exampleblock}{#2}#3\end{exampleblock}}}
+
+\newcommand\tf@image@height{}
+\newcommand\tf@image@width{}
+\newcommand\tf@image@title{}
+\newcommand\tf@image@license{}
+\newcommand\tf@image@img{}
+
+\define@key{tf@image@options}{height}{\renewcommand\tf@image@height{#1}}
+\define@key{tf@image@options}{width}{\renewcommand\tf@image@width{#1}}
+\define@key{tf@image@options}{title}{\renewcommand\tf@image@title{#1}}
+\define@key{tf@image@options}{license}{\renewcommand\tf@image@license{#1}}
+\define@key{tf@image@options}{img}{\renewcommand\tf@image@img{#1}}
+
+\newcommand\tf@image@missing[2]{%
+  \begin{tikzpicture}
+    \draw (0,0) rectangle +(#1,#2);
+    \node[text width=#1,align=center] at (.5*#1,.5*#2) {%
+      \textit{Missing image}\\%
+      \small(non included for copyright issues)%
+    };
+  \end{tikzpicture}%
+}
+
+\newcommand<>\tfImage[2][]{%
+  \begingroup%
+  \setkeys{tf@image@options}{#2}%
+  \tf#3[#1]{%
+    \begin{tabular}{@{}c@{}}%
+      \ifdefined\Ginput@path\edef\input@path{\input@path\Ginput@path}\fi%
+      \IfFileExists{\tf@image@img}{%
+        \tf@if@empty\tf@image@height{%
+          \tf@if@empty\tf@image@width{%
+            \includegraphics{\tf@image@img}%
+          }{%
+            \includegraphics[width=\tf@image@width]{\tf@image@img}%
+        }}{%
+          \tf@if@empty\tf@image@width{%
+            \includegraphics[height=\tf@image@height]{\tf@image@img}%
+          }{%
+            \includegraphics[height=\tf@image@height,width=\tf@image@width,keepaspectratio]{\tf@image@img}%
+      }}}{%
+        \tf@if@empty\tf@image@height{%
+          \tf@if@empty\tf@image@width{%
+            \tf@image@missing{2.5cm}{2.5cm}%
+          }{%
+            \tf@image@missing{\tf@image@width}{\tf@image@width}%
+        }}{%
+          \tf@if@empty\tf@image@width{%
+            \tf@image@missing{\tf@image@height}{\tf@image@height}%
+          }{%
+            \tf@image@missing{\tf@image@width}{\tf@image@height}%
+        }}
+      }%
+      \tf@if@empty\tf@image@title{}{\\\structure{\tf@image@title}}%
+      \tf@if@empty\tf@image@license{}{\structure{\footnote[frame]{\tf@image@license}}}%
+    \end{tabular}%
+  }%
+  \endgroup%
+}
+
+
+
+
+
+
+
+
+
+
+
+\newcommand{\tabularcell}[2][3cm]{%
+  \begin{minipage}{#1}%
+    \vspace{1mm}\begin{center}%
+      #2%
+    \end{center}\vspace{-1.5mm}%
+  \end{minipage}%
+}
+
+
+\endinput
+

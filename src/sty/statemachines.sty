@@ -1,0 +1,278 @@
+% SPDX-License-Identifier: CC-BY-SA-4.0
+% Author: Matthieu Perrin
+
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{statemachines}[2025/06/08 Package for automata, puchdown automata and turing machines]
+
+\RequirePackage{xcolor}
+\RequirePackage{keyval}
+\RequirePackage{xparse}
+\RequirePackage{tikz}
+\usetikzlibrary{automata}
+
+\providecommand{\blank}{\ensuremath{\#}}
+
+\newcommand<>\sm@style@append[2]{\only#3{\tikzset{#1/.append style={#2},}}}
+\newcommand<>\sm@style@set[2]{\only#3{\tikzset{#1/.style={#2},}}}
+\tikzset{smAutomaton/.style={shorten >=1pt,node distance=2cm,on grid,auto,initial text=, every initial by arrow/.style={-latex,},  loop/.append style={looseness=5}},}
+\tikzset{
+  smPushdown/.style={smAutomaton, initial text=$\diamond$},
+}
+
+\newcommand\sm@cell@width{6mm}
+\newcommand\sm@cell@height{6mm}
+\newcommand\sm@head@size{2mm}
+\newcommand\sm@draw@nextCell{}
+\newcommand\sm@array@name{}
+
+
+
+\colorlet{sm@head@color}{black}
+\colorlet{sm@fill@alert}{black!30}
+\colorlet{sm@fill@example}{black!20}
+\colorlet{sm@fill@structure}{black!10}
+
+\tikzset{sm@fill@default/.style={fill=none},sm@style@path/.style={-latex}}
+
+
+
+\newcounter{sm@pos}
+\newcommand\sm@pos@stepx{1}
+\newcommand\sm@pos@stepy{0}
+
+\newcommand\sm@draw@open\sm@draw@openH
+\newcommand\sm@draw@openV[1]{
+  \fill[sm@style@fill] (\value{sm@pos} * \sm@pos@stepx * \sm@cell@width,\value{sm@pos} * \sm@pos@stepy * \sm@cell@height) rectangle +(\sm@cell@width,\sm@cell@height);
+  \draw (\value{sm@pos} * \sm@pos@stepx * \sm@cell@width,\value{sm@pos} * \sm@pos@stepy * \sm@cell@height)
+  +(0,\sm@cell@height) -- +(0,0)
+  +(\sm@cell@width,0)  -- +(\sm@cell@width,\sm@cell@height)
+  +(.5 * \sm@cell@width, .5 * \sm@cell@height) node{#1};
+}
+\newcommand\sm@draw@openH[1]{
+  \fill[sm@style@fill] (\value{sm@pos} * \sm@pos@stepx * \sm@cell@width,\value{sm@pos} * \sm@pos@stepy * \sm@cell@height) rectangle +(\sm@cell@width,\sm@cell@height);
+  \draw (\value{sm@pos} * \sm@pos@stepx * \sm@cell@width,\value{sm@pos} * \sm@pos@stepy * \sm@cell@height)
+  +(0,0) -- +(\sm@cell@width,0)
+  +(\sm@cell@width,\sm@cell@height) -- +(0,\sm@cell@height)
+  +(.5 * \sm@cell@width, .5 * \sm@cell@height) node{#1};
+}
+\newcommand\sm@draw@none[1]{
+  \fill[sm@style@fill] (\value{sm@pos} * \sm@pos@stepx * \sm@cell@width,\value{sm@pos} * \sm@pos@stepy * \sm@cell@height) rectangle +(\sm@cell@width,\sm@cell@height);
+  \draw (\value{sm@pos} * \sm@pos@stepx * \sm@cell@width,\value{sm@pos} * \sm@pos@stepy * \sm@cell@height)
+  +(.5 * \sm@cell@width, .5 * \sm@cell@height) node{#1};
+}
+
+\newcommand\sm@draw@name{
+  \if\sm@array@name\ \ \else
+    \draw (\sm@cell@width/2,\sm@cell@height/2) node{\sm@array@name};
+  \fi
+}
+
+
+
+\newcommand\sm@draw@cell[1]{
+  \fill[sm@style@fill] (\value{sm@pos} * \sm@pos@stepx * \sm@cell@width,\value{sm@pos} * \sm@pos@stepy * \sm@cell@height) rectangle +(\sm@cell@width,\sm@cell@height);
+  \draw                (\value{sm@pos} * \sm@pos@stepx * \sm@cell@width,\value{sm@pos} * \sm@pos@stepy * \sm@cell@height) rectangle +(\sm@cell@width,\sm@cell@height);
+  \draw (\value{sm@pos} * \sm@pos@stepx * \sm@cell@width,\value{sm@pos} * \sm@pos@stepy * \sm@cell@height) +(\sm@cell@width/2,\sm@cell@height/2) node{#1};
+}
+\newcommand\sm@draw@head[2]{
+  \fill[#1,rounded corners=2] (#2 * \sm@pos@stepx * \sm@cell@width, #2 * \sm@pos@stepy * \sm@cell@height)
+  ++( .5 *                   \sm@cell@width, .5 *                   \sm@cell@height)
+  ++( .5 * \sm@pos@stepy * \sm@cell@width,-.5 * \sm@pos@stepx * \sm@cell@height) --
+  +( .5 * \sm@pos@stepx * \sm@head@size + \sm@pos@stepy * \sm@head@size ,- \sm@pos@stepx * \sm@head@size + .5 * \sm@pos@stepy * \sm@head@size) --
+  +(-.5 * \sm@pos@stepx * \sm@head@size + \sm@pos@stepy * \sm@head@size ,- \sm@pos@stepx * \sm@head@size - .5 * \sm@pos@stepy * \sm@head@size) --
+  +(0,0);
+}
+
+\newcommand\sm@draw@move[3]{%
+  \pgfmathparse{#2 < #3}%
+  \ifnum\pgfmathresult=1%
+  \draw[#1, ->] (
+  #2 * \sm@pos@stepx * \sm@cell@width  + .5 * \sm@cell@width  + .5 * \sm@pos@stepy * \sm@cell@width  + .15 * \sm@pos@stepx * \sm@cell@width + .15 * \sm@pos@stepy * \sm@cell@width,
+  #2 * \sm@pos@stepy * \sm@cell@height + .5 * \sm@cell@height - .5 * \sm@pos@stepx * \sm@cell@height - .15 * \sm@pos@stepx * \sm@cell@width + .15 * \sm@pos@stepy * \sm@cell@width) -- (
+  #3 * \sm@pos@stepx * \sm@cell@width  + .5 * \sm@cell@width  + .5 * \sm@pos@stepy * \sm@cell@width  - .15 * \sm@pos@stepx * \sm@cell@width + .15 * \sm@pos@stepy * \sm@cell@width,
+  #3 * \sm@pos@stepy * \sm@cell@height + .5 * \sm@cell@height - .5 * \sm@pos@stepx * \sm@cell@height - .15 * \sm@pos@stepx * \sm@cell@width - .15 * \sm@pos@stepy * \sm@cell@width);
+  \else%
+  \draw[#1, ->] (
+  #2 * \sm@pos@stepx * \sm@cell@width  + .5 * \sm@cell@width  + .5 * \sm@pos@stepy * \sm@cell@width  - .15 * \sm@pos@stepx * \sm@cell@width + .15 * \sm@pos@stepy * \sm@cell@width,
+  #2 * \sm@pos@stepy * \sm@cell@height + .5 * \sm@cell@height - .5 * \sm@pos@stepx * \sm@cell@height - .15 * \sm@pos@stepx * \sm@cell@width - .15 * \sm@pos@stepy * \sm@cell@width) -- (
+  #3 * \sm@pos@stepx * \sm@cell@width  + .5 * \sm@cell@width  + .5 * \sm@pos@stepy * \sm@cell@width  + .15 * \sm@pos@stepx * \sm@cell@width + .15 * \sm@pos@stepy * \sm@cell@width,
+  #3 * \sm@pos@stepy * \sm@cell@height + .5 * \sm@cell@height - .5 * \sm@pos@stepx * \sm@cell@height - .15 * \sm@pos@stepx * \sm@cell@width + .15 * \sm@pos@stepy * \sm@cell@width);
+  \fi%
+}
+
+
+\define@key{sm@options}{width}{\renewcommand\sm@cell@width{#1}}
+\define@key{sm@options}{height}{\renewcommand\sm@cell@height{#1}}
+\define@key{sm@options}{headsize}{\renewcommand\sm@head@size{#1}}
+\define@key{sm@options}{size}{\renewcommand\sm@cell@width{#1}\renewcommand\sm@cell@height{#1}\renewcommand\sm@head@size{.33 * #1}}
+\define@key{sm@options}{fill}{\sm@style@set{sm@fill@default}{fill=#1}}
+\define@key{sm@options}{direction}{\def\smDirection{#1}\@nameuse{sm@config@direction@#1}}
+\define@key{sm@options}{name}{\renewcommand\sm@array@name{#1}}
+
+\newcommand\sm@config@direction@north{
+  \renewcommand\sm@pos@stepx{0}
+  \renewcommand\sm@pos@stepy{1}
+  \renewcommand\sm@draw@open\sm@draw@openV
+}
+\newcommand\sm@config@direction@south{
+  \renewcommand\sm@pos@stepx{0}
+  \renewcommand\sm@pos@stepy{-1}
+  \renewcommand\sm@draw@open\sm@draw@openV
+}
+\newcommand\sm@config@direction@east{
+  \renewcommand\sm@pos@stepx{1}
+  \renewcommand\sm@pos@stepy{0}
+  \renewcommand\sm@draw@open\sm@draw@openH
+}
+\newcommand\sm@config@direction@west{
+  \renewcommand\sm@pos@stepx{-1}
+  \renewcommand\sm@pos@stepy{0}
+  \renewcommand\sm@draw@open\sm@draw@openH
+}
+
+\NewDocumentEnvironment{smArray}{O{}}{%
+  \begingroup%
+  \setkeys{sm@options}{#1}%
+  \begin{tikzpicture}[baseline=(sm@baseline),anchor=center]
+    \coordinate (sm@baseline) at (0,0);
+    \setcounter{sm@pos}{0}
+    \sm@draw@name
+}{
+  \end{tikzpicture}
+  \endgroup
+}
+
+\NewDocumentEnvironment{smTape}{O{}}{%
+  \begin{smArray}[direction=east,#1]%
+    \smCell[\smOpen]{\dots}
+}{%
+    \smCell[\smOpen]{\dots}
+  \end{smArray}%
+}
+
+\NewDocumentEnvironment{smStack}{O{}}{%
+  \begin{smArray}[direction=north,#1]%
+}{%
+  \smCell[\smOpen]{}
+  \end{smArray}%
+}
+ 
+\NewDocumentEnvironment{smQueue}{O{}}{%
+  \begin{smArray}[direction=east,#1]%
+  \smCell[\smOpen]{$\rightarrow$}
+}{%
+  \smCell[\smOpen]{$\rightarrow$}
+  \end{smArray}%
+}
+
+
+
+\NewDocumentEnvironment{smAutomaton}{O{}}{%
+  \begin{tikzpicture}[smAutomaton,#1]%
+}{%
+  \end{tikzpicture}%
+}
+
+\newcommand<>\smCell[2][]{%
+  \only#3{
+    \stepcounter{sm@pos}
+    \renewcommand\sm@draw@nextCell{\sm@draw@cell}
+    \sm@style@set{sm@style@fill}{sm@fill@default}
+    #1
+    \sm@draw@nextCell{#2}
+  }
+}
+
+\newcommand<>\smHead[1][sm@head@color]{\uncover#2{
+    \sm@draw@head{#1}{\value{sm@pos}}
+}}
+
+\newcommand<>\smHeadAt[2][sm@head@color]{\uncover#3{
+    \sm@draw@head{#1}{#2}
+}}
+
+\newcommand<>\smHeadFrom[2][sm@head@color]{\uncover#3{
+    \pgfmathsetmacro{\sm@from}{\value{sm@pos} + (#2)}
+    \sm@draw@head{#1!50}{\sm@from}
+    \sm@draw@head{#1}{\value{sm@pos}}
+    \sm@draw@move{#1}{\sm@from}{\value{sm@pos}}
+}}
+
+\newcommand<>\smState[1][]{%
+  \sm@style@set#2{sm@style@state}{state}
+  \sm@style@set{sm@style@fill}{sm@fill@default}
+  #1%
+  \node#2[sm@style@fill,sm@style@state]%
+}
+
+\newcommand<>\smPath[1][]{%
+  \sm@style@set#2{sm@style@path}{-latex}
+  #1%
+  \path#2[sm@style@path]%
+}
+
+
+\newcommand<>\smNone              {\only#1{\renewcommand\sm@draw@nextCell{\sm@draw@none}}}
+\newcommand<>\smOpen              {\only#1{\renewcommand\sm@draw@nextCell{\sm@draw@open}}}
+\newcommand<>\smFill[1]           {\sm@style@append#2{sm@style@fill}{fill=#1}}
+\newcommand<>\smAlert             {\smFill#1{sm@fill@alert!25}     \sm@style@append#1{sm@style@path}{sm@fill@alert}}
+\newcommand<>\smExample           {\smFill#1{sm@fill@example!25}   \sm@style@append#1{sm@style@path}{sm@fill@example}}
+\newcommand<>\smStructure         {\smFill#1{sm@fill@structure!25} \sm@style@append#1{sm@style@path}{sm@fill@structure}}
+\newcommand<>\smInitial           {\only#1{\sm@style@append{sm@style@state}{initial left}}}
+\newcommand<>\smInitialAbove      {\only#1{\sm@style@append{sm@style@state}{initial above}}}
+\newcommand<>\smInitialBelow      {\only#1{\sm@style@append{sm@style@state}{initial below}}}
+\newcommand<>\smInitialRight      {\only#1{\sm@style@append{sm@style@state}{initial right}}}
+\newcommand<>\smAccepting         {\only#1{\sm@style@append#1{sm@style@state}{accepting}}}
+
+\newcommand\smCoord[1]{%
+  \node[rectangle,minimum width=\sm@cell@width,minimum height=\sm@cell@height] #1 at (\value{sm@pos} * \sm@pos@stepx * \sm@cell@width + \sm@cell@width/2,\value{sm@pos} * \sm@pos@stepy * \sm@cell@height+\sm@cell@height/2) {};
+}
+
+
+
+\newcommand\sm@transition@internal[6][]{\ensuremath{\ifblank{#1}{}{#1\!:\!} & \mathord{#2} & \mathord{#3} &\mathord{#4} &\mathord{#5} & \mathord{#6} \\}}
+\newcommand\sm@transition@aligned[6][]{\ensuremath{\begin{sm@transition@align}\sm@transition@internal[#1]{#2}{#3}{#4}{#5}{#6}\end{sm@transition@align}}}
+\newcommand\sm@transition@external\sm@transition@aligned
+
+\newenvironment{sm@transition@align}{%
+  \begingroup
+  \begin{array}{@{}r@{\,}c@{}c@{}c@{}c@{}c@{}}
+}{
+  \end{array}
+  \endgroup
+}
+ 
+\newcommand\smTMtrans [4][]{\sm@transition@external[#1]{#2}{/}{#3}{,}{#4}}
+\newcommand\smTMtransS[3][]{\smTMtrans[#1]{#2}{#3}{\diamond}}
+\newcommand\smTMtransL[3][]{\smTMtrans[#1]{#2}{#3}{\triangleleft}}
+\newcommand\smTMtransR[3][]{\smTMtrans[#1]{#2}{#3}{\triangleright}}
+\newcommand\smTMtransP[3][]{\smTMtrans[#1]{#2}{#3}{+}}
+\newcommand\smTMtransM[2][]{\sm@transition@external[#1]{#2}{/}{-}{}{}}
+
+\newcommand\smPAtrans [4][]{\sm@transition@external[#1]{#2}{/}{#3}{/}{#4}}
+
+
+\newcommand\smAlign[1]{%
+  \begingroup
+  \let\sm@transition@external\sm@transition@internal
+  \ensuremath{
+    \begin{sm@transition@align}
+      #1
+    \end{sm@transition@align}
+  }
+  \endgroup
+}
+ 
+ 
+\newcommand\smGroup[1]{\ensuremath{\left\{\smAlign{#1}\right.}}
+
+
+\newcommand{\transX}[3]{#1 / #2, #3}
+\newcommand{\trans}[2]{\transX{#1}{#2}{\diamond}}
+\newcommand{\transG}[2]{\transX{#1}{#2}{\triangleleft}}
+\newcommand{\transD}[2]{\transX{#1}{#2}{\triangleright}}
+\newcommand{\transPlus}[2]{\transX{#1}{#2}{+}}
+\newcommand{\transMoins}[1]{#1/-}
+
+
+\endinput

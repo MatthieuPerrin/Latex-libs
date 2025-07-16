@@ -1,0 +1,76 @@
+% SPDX-License-Identifier: CC-BY-SA-4.0
+% Author: Matthieu Perrin
+
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{beamerinnerthemeNantes}[2025/06/09 Settings for inner parts of the Nantes beamer theme]
+
+\mode<presentation>
+
+\RequirePackage{tikz}
+
+\newcommand\myRec{%
+  \begin{tikzpicture}%
+    \fill[rounded corners=2] (0,0) -- (0.0,0.3) -- (0.28,0.15) -- cycle;%
+  \end{tikzpicture}%
+}
+
+\@ifundefined{ifNantes@showsectionpage}{
+  \newif\ifNantes@showsectionpage
+  \Nantes@showsectionpagefalse
+}{}
+
+\setbeamertemplate{itemize item}{\hbox{\myRec}}
+\setbeamertemplate{itemize subitem}{\hbox{\scalebox{.7}{\myRec}}}
+\setbeamertemplate{itemize subsubitem}{\hbox{\scalebox{.5}{\myRec}}}
+
+\defbeamertemplate*{section in toc}{Nantes}[1][]{
+  \@Roman\inserttocsectionnumber.~\inserttocsection\par
+}
+
+\defbeamertemplate*{subsection in toc}{Nantes}[1][]{
+  \hspace{4ex}\inserttocsubsectionnumber.~\inserttocsubsection\par
+}
+
+\defbeamertemplate*{section page}{Nantes}[1][]{
+    \tableofcontents[subsectionstyle=show/show/hide, sectionstyle=show/shaded]
+}
+
+\defbeamertemplate*{title page}{Nantes}[1][]{
+  \begin{centering}
+    \vskip10pt
+    \ifx\inserttitle\@empty\else
+        {\usebeamerfont{title}\usebeamercolor[fg]{title}\inserttitle\par}
+    \fi
+    \ifx\insertsubtitle\@empty\else
+        \vskip0.5em\par
+        {\usebeamerfont{subtitle}\usebeamercolor[fg]{subtitle}\insertsubtitle\par}
+    \fi
+    \ifx\insertauthor\@empty\else
+        \vskip3em\par
+        {\usebeamerfont{author}\usebeamercolor[fg]{author}\insertauthor\par}
+    \fi
+    \ifx\insertinstitute\@empty\else
+        \vskip1em\par
+        {\usebeamerfont{institute}\usebeamercolor[fg]{institute}\insertinstitute\par}
+    \fi
+    \ifx\insertdate\@empty\else
+        \vskip2em\par
+        {\usebeamerfont{date}\usebeamercolor[fg]{date}\insertdate\par}
+    \fi
+    \vskip10pt
+  \end{centering}
+}
+
+\providecommand\Nantes@PartName{\ifnum\language=\csname l@french\endcsname Partie \else Part \fi}
+\providecommand\Nantes@OutlineName{\ifnum\language=\csname l@french\endcsname Table des matières\else Outline\fi}
+
+\AtBeginSection[]{%
+  \ifNantes@showsectionpage
+  \begin{frame}[plain,noframenumbering]{\ifx\insertpart\@empty\Nantes@OutlineName\else{\Nantes@PartName \Alph{part}. \insertpart}\fi}
+    \sectionpage
+  \end{frame}
+  \fi
+}
+
+\mode<all>
+\endinput

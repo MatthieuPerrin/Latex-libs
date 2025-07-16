@@ -1,0 +1,32 @@
+% SPDX-License-Identifier: CC-BY-SA-4.0
+% Author: Matthieu Perrin
+
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{beamercolorthemeNantes}[2025/06/09 Color settings for the Nantes beamer theme]
+
+
+\mode<presentation>
+
+\definecolor{structure}{RGB}{0,70,140}
+\definecolor{alert}{RGB}{181, 48, 22}
+\definecolor{example}{RGB}{22, 107, 31}
+
+\setbeamercolor*{title page header}{fg=structure}
+\setbeamercolor*{author}{fg=black}
+\setbeamercolor*{date}{fg=structure}
+\setbeamercolor*{institute}{fg=black!75}
+
+\setbeamercolor{frametitle}{bg=white, fg=structure}
+\setbeamercolor{footline}{bg=black, fg=white}
+\setbeamercolor{headline}{bg=black, fg=white}
+
+\setbeamercolor{normal text}{fg=black,bg=white}
+\setbeamercolor{structure}{fg=structure,bg=white}
+\setbeamercolor{example text}{fg=example,bg=white}
+\setbeamercolor{alerted text}{fg=alert,bg=white}
+
+\newcommand<>{\example}[1]{\alt#2{{\color{example}#1}}{#1}}
+
+
+\mode<all>
+\endinput

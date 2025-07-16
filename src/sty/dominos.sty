@@ -1,0 +1,175 @@
+% SPDX-License-Identifier: CC-BY-SA-4.0
+% Author: Matthieu Perrin
+
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{dominos}[2025/06/08 Dominoes Package]
+
+\RequirePackage{tikz}
+\RequirePackage{xcolor}
+
+% ----------------------------------------
+% Configurables
+% ----------------------------------------
+
+\providecommand{\dominoHeightFactor}{1.2}
+\providecommand{\dominoDefaultWidth}{.6}
+
+\tikzset{
+  domino/.style={rounded corners=2},
+  domino top/.style={fill=black!20},
+  domino bottom/.style={fill=black!10},
+  domino text/.style={scale=.8}
+}
+
+% ----------------------------------------
+% Internal: dynamic height computation
+% ----------------------------------------
+\newlength{\dominos@height}
+
+% ----------------------------------------
+% Internal horizontal domino
+% ----------------------------------------
+\newcommand\dominos@HDomino[3]{%
+  \begingroup%
+  \setlength{\dominos@height}{\dimexpr \dominoHeightFactor\fontdimen6\font \relax}%
+  \begin{tikzpicture}[baseline=\dimexpr0.3\dominos@height\relax]
+    \begin{scope}
+      \clip (0,0) rectangle (#1,\dominos@height);
+      \fill[domino top, domino] (0,0) rectangle (2*#1,\dominos@height);
+      \node[domino text] at (#1/2, 0.5*\dominos@height) {#2};
+    \end{scope}
+    \begin{scope}
+      \clip (#1,0) rectangle (2*#1,\dominos@height);
+      \fill[domino bottom, domino] (0,0) rectangle (2*#1,\dominos@height);
+      \node[domino text] at (1.5*#1, 0.5*\dominos@height) {#3};
+    \end{scope}
+    \draw[domino] (0,0) rectangle (2*#1,\dominos@height);
+    \draw (#1,0) -- (#1,\dominos@height);
+  \end{tikzpicture}%
+  \endgroup%
+}
+
+% ----------------------------------------
+% Internal vertical domino
+% ----------------------------------------
+\newcommand\dominos@VDomino[3]{%
+  \begingroup%
+  \setlength{\dominos@height}{\dimexpr \dominoHeightFactor\fontdimen6\font \relax}%
+  \begin{tikzpicture}[baseline=\dimexpr0.75\dominos@height\relax,anchor=center]
+    \begin{scope}
+      \clip (0,0) rectangle (#1, \dominos@height);
+      \fill[domino bottom, domino] (0, 0) rectangle (#1, 2\dominos@height);
+      \node[domino text] at (0.5*#1, 0.5\dominos@height) {#3};
+    \end{scope}
+    \begin{scope}
+      \clip (0, \dominos@height) rectangle (#1, 2*\dominos@height);
+      \fill[domino top, domino] (0, 0) rectangle (#1, 2\dominos@height);
+      \node[domino text] at (0.5*#1, 1.5\dominos@height) {#2};
+    \end{scope}
+    \draw[domino] (0, 0) rectangle (#1, 2\dominos@height);
+    \draw (0, \dominos@height) -- (#1, \dominos@height);
+  \end{tikzpicture}%
+  \endgroup%
+}
+
+\newcommand\HDomino[3][\dominoDefaultWidth]{%
+  \ifmmode%
+    \dominos@HDomino{#1}{$#2$}{$#3$}%
+  \else%
+    \dominos@HDomino{#1}{#2}{#3}%
+  \fi%
+}
+
+\newcommand\VDomino[3][\dominoDefaultWidth]{%
+  \ifmmode%
+    \dominos@VDomino{#1}{$#2$}{$#3$}%
+  \else%
+    \dominos@VDomino{#1}{#2}{#3}%
+  \fi%
+}
+
+
+\newcommand\dominos@VContextL[3]{%
+  \begingroup%
+  \setlength{\dominos@height}{\dimexpr \dominoHeightFactor\fontdimen6\font \relax}%
+  \begin{tikzpicture}[baseline=\dimexpr0.75\dominos@height\relax,anchor=center]
+    \begin{scope}
+      \clip (0,0) rectangle (#1, \dominos@height);
+      \fill[domino bottom,domino] (0, 2\dominos@height) -- (#1, 2\dominos@height) -- (#1, 0) -- (0, 0);
+      \node[domino text,anchor=west] at (0, 0.5\dominos@height) {#3};
+    \end{scope}
+    \begin{scope}
+      \clip (0, \dominos@height) rectangle (#1, 2*\dominos@height);
+      \fill[domino top,domino] (0, 2\dominos@height) -- (#1, 2\dominos@height) -- (#1, 0) -- (0, 0);
+      \node[domino text,anchor=west] at (0, 1.5\dominos@height) {#2};
+    \end{scope}
+    \draw[domino,dashed] (0, 2\dominos@height) -- (#1, 2\dominos@height) -- (#1, 0) -- (0, 0);
+    \draw[dashed] (0, \dominos@height) -- (#1, \dominos@height);
+  \end{tikzpicture}%
+  \endgroup%
+}
+\newcommand\dominos@VContextC[3]{%
+  \begingroup%
+  \setlength{\dominos@height}{\dimexpr \dominoHeightFactor\fontdimen6\font \relax}%
+  \begin{tikzpicture}[baseline=\dimexpr0.75\dominos@height\relax,anchor=center]
+    \begin{scope}
+      \clip (0,0) rectangle (#1, \dominos@height);
+      \fill[domino bottom] (0,0) rectangle (#1, 2\dominos@height);
+      \node[domino text] at (.5*#1, 0.5\dominos@height) {#3};
+    \end{scope}
+    \begin{scope}
+      \clip (0, \dominos@height) rectangle (#1, 2*\dominos@height);
+      \fill[domino top] (0,0) rectangle (#1, 2\dominos@height);
+      \node[domino text] at (.5*#1, 1.5\dominos@height) {#2};
+    \end{scope}
+    \draw[domino,dashed] (#1, 2\dominos@height) -- (0, 2\dominos@height) (0, 0) -- (#1, 0);
+    \draw[dashed] (0, \dominos@height) -- (#1, \dominos@height);
+  \end{tikzpicture}%
+  \endgroup%
+}
+\newcommand\dominos@VContextR[3]{%
+  \begingroup%
+  \setlength{\dominos@height}{\dimexpr \dominoHeightFactor\fontdimen6\font \relax}%
+  \begin{tikzpicture}[baseline=\dimexpr0.75\dominos@height\relax,anchor=center]
+    \begin{scope}
+      \clip (0,0) rectangle (#1, \dominos@height);
+      \fill[domino bottom,domino] (#1, 2\dominos@height) -- (0, 2\dominos@height) -- (0, 0) -- (#1, 0);
+      \node[domino text,anchor=east] at (#1, 0.5\dominos@height) {#3};
+    \end{scope}
+    \begin{scope}
+      \clip (0, \dominos@height) rectangle (#1, 2*\dominos@height);
+      \fill[domino top,domino] (#1, 2\dominos@height) -- (0, 2\dominos@height) -- (0, 0) -- (#1, 0);
+      \node[domino text,anchor=east] at (#1, 1.5\dominos@height) {#2};
+    \end{scope}
+    \draw[domino,dashed] (#1, 2\dominos@height) -- (0, 2\dominos@height) -- (0, 0) -- (#1, 0);
+    \draw[dashed] (0, \dominos@height) -- (#1, \dominos@height);
+  \end{tikzpicture}%
+  \endgroup%
+}
+
+
+\newcommand\VDominoContextL[3][\dominoDefaultWidth]{%
+  \ifmmode%
+    \dominos@VContextL{#1}{$#2$}{$#3$}%
+  \else%
+    \dominos@VContextL{#1}{#2}{#3}%
+  \fi%
+}
+\newcommand\VDominoContextC[3][\dominoDefaultWidth]{%
+  \ifmmode%
+    \dominos@VContextC{#1}{$#2$}{$#3$}%
+  \else%
+    \dominos@VContextC{#1}{#2}{#3}%
+  \fi%
+}
+\newcommand\VDominoContextR[3][\dominoDefaultWidth]{%
+  \ifmmode%
+    \dominos@VContextR{#1}{$#2$}{$#3$}%
+  \else%
+    \dominos@VContextR{#1}{#2}{#3}%
+  \fi%
+}
+
+
+
+\endinput
