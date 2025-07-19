@@ -17,6 +17,7 @@
 \tikzset{smAutomaton/.style={shorten >=1pt,node distance=2cm,on grid,auto,initial text=, every initial by arrow/.style={-latex,},  loop/.append style={looseness=5}},}
 \tikzset{
   smPushdown/.style={smAutomaton, initial text=$\diamond$},
+  sm@style@state/.style={state},
 }
 
 \newcommand\sm@cell@width{6mm}
@@ -33,6 +34,7 @@
 \colorlet{sm@fill@structure}{black!10}
 
 \tikzset{sm@fill@default/.style={fill=none},sm@style@path/.style={-latex}}
+\tikzset{smCloud/.style={anchor=center, cloud, cloud puffs=11, cloud puff arc=120, aspect=2, inner ysep=1em},}
 
 
 
@@ -215,10 +217,11 @@
 \newcommand<>\smNone              {\only#1{\renewcommand\sm@draw@nextCell{\sm@draw@none}}}
 \newcommand<>\smOpen              {\only#1{\renewcommand\sm@draw@nextCell{\sm@draw@open}}}
 \newcommand<>\smFill[1]           {\sm@style@append#2{sm@style@fill}{fill=#1}}
+\newcommand<>\smColor[1]          {\sm@style@append#2{sm@style@path}{#1} \sm@style@append#2{sm@style@state}{#1}}
 \newcommand<>\smAlert             {\smFill#1{sm@fill@alert!25}     \sm@style@append#1{sm@style@path}{sm@fill@alert}}
 \newcommand<>\smExample           {\smFill#1{sm@fill@example!25}   \sm@style@append#1{sm@style@path}{sm@fill@example}}
 \newcommand<>\smStructure         {\smFill#1{sm@fill@structure!25} \sm@style@append#1{sm@style@path}{sm@fill@structure}}
-\newcommand<>\smInitial           {\only#1{\sm@style@append{sm@style@state}{initial left}}}
+\newcommand<>\smInitial           {\only#1{\sm@style@append{sm@style@state}{initial}}}
 \newcommand<>\smInitialAbove      {\only#1{\sm@style@append{sm@style@state}{initial above}}}
 \newcommand<>\smInitialBelow      {\only#1{\sm@style@append{sm@style@state}{initial below}}}
 \newcommand<>\smInitialRight      {\only#1{\sm@style@append{sm@style@state}{initial right}}}
