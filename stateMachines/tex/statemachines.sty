@@ -34,7 +34,7 @@
 \colorlet{sm@fill@structure}{black!10}
 
 \tikzset{sm@fill@default/.style={fill=none},sm@style@path/.style={-latex}}
-\tikzset{smCloud/.style={anchor=center, cloud, cloud puffs=11, cloud puff arc=120, aspect=2, inner ysep=1em},}
+\tikzset{smCloud/.style={anchor=mid, cloud, cloud puffs=11, cloud puff arc=120, aspect=2, inner ysep=1em},}
 
 
 
@@ -74,7 +74,7 @@
 \newcommand\sm@draw@cell[1]{
   \fill[sm@style@fill] (\value{sm@pos} * \sm@pos@stepx * \sm@cell@width,\value{sm@pos} * \sm@pos@stepy * \sm@cell@height) rectangle +(\sm@cell@width,\sm@cell@height);
   \draw                (\value{sm@pos} * \sm@pos@stepx * \sm@cell@width,\value{sm@pos} * \sm@pos@stepy * \sm@cell@height) rectangle +(\sm@cell@width,\sm@cell@height);
-  \draw (\value{sm@pos} * \sm@pos@stepx * \sm@cell@width,\value{sm@pos} * \sm@pos@stepy * \sm@cell@height) +(\sm@cell@width/2,\sm@cell@height/2) node{#1};
+  \draw   (\value{sm@pos} * \sm@pos@stepx * \sm@cell@width,\value{sm@pos} * \sm@pos@stepy * \sm@cell@height) +(\sm@cell@width/2,\sm@cell@height/2) node{#1};
 }
 \newcommand\sm@draw@head[2]{
   \fill[#1,rounded corners=2] (#2 * \sm@pos@stepx * \sm@cell@width, #2 * \sm@pos@stepy * \sm@cell@height)
@@ -135,7 +135,7 @@
 \NewDocumentEnvironment{smArray}{O{}}{%
   \begingroup%
   \setkeys{sm@options}{#1}%
-  \begin{tikzpicture}[baseline=(sm@baseline),anchor=center]
+  \begin{tikzpicture}[baseline=(sm@baseline),anchor=mid]
     \coordinate (sm@baseline) at (0,0);
     \setcounter{sm@pos}{0}
     \sm@draw@name
@@ -228,7 +228,8 @@
 \newcommand<>\smAccepting         {\only#1{\sm@style@append#1{sm@style@state}{accepting}}}
 
 \newcommand\smCoord[1]{%
-  \node[rectangle,minimum width=\sm@cell@width,minimum height=\sm@cell@height] #1 at (\value{sm@pos} * \sm@pos@stepx * \sm@cell@width + \sm@cell@width/2,\value{sm@pos} * \sm@pos@stepy * \sm@cell@height+\sm@cell@height/2) {};
+  \node[rectangle,minimum width=\sm@cell@width,minimum height=\sm@cell@height, anchor=center]
+  #1 at (\value{sm@pos} * \sm@pos@stepx * \sm@cell@width + \sm@cell@width/2,\value{sm@pos} * \sm@pos@stepy * \sm@cell@height+\sm@cell@height/2) {};
 }
 
 
