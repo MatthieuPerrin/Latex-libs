@@ -208,7 +208,7 @@
   \sm@style@set#2{sm@style@state}{state}
   \sm@style@set{sm@style@fill}{sm@fill@default}
   #1%
-  \node#2[sm@style@fill,sm@style@state]%
+  \node#2[sm@style@fill,sm@style@state, state]%
 }
 
 \newcommand<>\smPath[1][]{%
@@ -218,13 +218,31 @@
 }
 
 
+\newcommand<>\smStateStyle[1]{\only#2{\tikzset{sm@style@state/.append style={#1},}}}
+\newcommand<>\smPathStyle[1]{\only#2{\tikzset{sm@style@path/.append style={#1},}}}
+
+\newcommand<>\smDraw[2][]{%
+  \uncover#3{%
+    \tikzset{sm@style@state/.style={},}%
+    \tikzset{sm@style@path/.style={-latex},}%
+    #1%
+    \tikzset{every state/.append style={sm@style@state},}%
+    \tikzset{every path/.append style={sm@style@path},}%
+    #2%
+    \tikzset{sm@style@state/.style={},}%
+    \tikzset{sm@style@path/.style={-latex},}%
+  }
+}
+
+
+
 \newcommand<>\smNone              {\only#1{\renewcommand\sm@draw@nextCell{\sm@draw@none}}}
 \newcommand<>\smOpen              {\only#1{\renewcommand\sm@draw@nextCell{\sm@draw@open}}}
 \newcommand<>\smFill[1]           {\sm@style@append#2{sm@style@fill}{fill=#1}}
 \newcommand<>\smColor[1]          {\sm@style@append#2{sm@style@path}{#1} \sm@style@append#2{sm@style@state}{#1}}
-\newcommand<>\smAlert             {\smFill#1{sm@fill@alert!25}     \sm@style@append#1{sm@style@path}{sm@fill@alert}}
-\newcommand<>\smExample           {\smFill#1{sm@fill@example!25}   \sm@style@append#1{sm@style@path}{sm@fill@example}}
-\newcommand<>\smStructure         {\smFill#1{sm@fill@structure!25} \sm@style@append#1{sm@style@path}{sm@fill@structure}}
+\newcommand<>\smAlert             {\smFill#1{sm@fill@alert!25}     \sm@style@append#1{sm@style@path}{sm@fill@alert}\sm@style@append#1{sm@style@state}{fill=sm@fill@alert!20}}
+\newcommand<>\smExample           {\smFill#1{sm@fill@example!25}   \sm@style@append#1{sm@style@path}{sm@fill@example}\sm@style@append#1{sm@style@state}{fill=sm@fill@example!20}}
+\newcommand<>\smStructure         {\smFill#1{sm@fill@structure!25} \sm@style@append#1{sm@style@path}{sm@fill@structure}\sm@style@append#1{sm@style@state}{fill=sm@fill@structure!20}}
 \newcommand<>\smInitial           {\only#1{\sm@style@append{sm@style@state}{initial}}}
 \newcommand<>\smInitialAbove      {\only#1{\sm@style@append{sm@style@state}{initial above}}}
 \newcommand<>\smInitialBelow      {\only#1{\sm@style@append{sm@style@state}{initial below}}}
@@ -281,6 +299,67 @@
 \newcommand{\transD}[2]{\transX{#1}{#2}{\triangleright}}
 \newcommand{\transPlus}[2]{\transX{#1}{#2}{+}}
 \newcommand{\transMoins}[1]{#1/-}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\newcommand\sm@array@width{23mm}
+\newcommand\sm@array@height{15mm}
+\newcommand\sm@array@column@width{\sm@array@width}
+\newcommand\sm@array@column@header{}
+
+\define@key{sm@array@options}{width}{\renewcommand\sm@array@width{#1}}
+\define@key{sm@array@options}{height}{\renewcommand\sm@array@height{#1}}
+\define@key{sm@array@column@options}{width}{\renewcommand\sm@array@column@width{#1}}
+\define@key{sm@array@column@options}{header}{\renewcommand\sm@array@column@header{#1}}
+
+\NewDocumentEnvironment{sm2D}{O{}}{%
+  \begingroup%
+  \setkeys{sm@array@options}{#1}%
+  \begin{tikzpicture}[anchor=mid]
+    \coordinate (sm@array@pos@top-east) at (0,0);
+}{
+  \draw (sm@array@pos@top-east) -- (sm@array@pos@current.south east);
+  \end{tikzpicture}
+  \endgroup
+}
+
+\newcommand\smColumn[2][]{%
+  \setkeys{sm@array@column@options}{width=\sm@array@width, #1}%
+  \coordinate (sm@array@pos@top-west) at (sm@array@pos@top-east);
+  \coordinate (sm@array@pos@top-east) at ([xshift=\sm@array@column@width]sm@array@pos@top-west);
+  \draw (sm@array@pos@top-west) -- (sm@array@pos@top-east) coordinate[pos=0.5] (sm@array@pos@current);
+  \node at ([yshift=2mm]sm@array@pos@current) {\sm@array@column@header};
+  #2
+  \draw (sm@array@pos@top-west) -- (sm@array@pos@current.south west);
+}
+
+\newcommand\smLine[1]{%
+  \coordinate[
+    rectangle,
+    text width=\sm@array@column@width,
+    text height=\sm@array@height,
+    anchor=north,
+    inner sep=0pt
+  ] (sm@array@pos@current) at (sm@array@pos@current.south);
+  \node[
+    text width=\sm@array@column@width,
+    align=center,
+    inner sep=3pt,
+    anchor=center
+  ] at (sm@array@pos@current.center) {#1};
+  \draw (sm@array@pos@current.south west) -- (sm@array@pos@current.south east);
+}
 
 
 \endinput
