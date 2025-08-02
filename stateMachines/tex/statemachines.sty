@@ -18,26 +18,6 @@
 
 
 \tikzset{
-  Alert/.style={
-    every state/.append style={alert, fill=alert!30},
-    every path/.append style={alert,},
-  },
-  Alert on/.style={alt=#1{Alert}{}},
-  Example/.style={
-    every state/.append style={example, fill=example!30},
-    every path/.append style={example,},
-  },
-  Example on/.style={alt=#1{Example}{}},
-  Structure/.style={
-    every state/.append style={structure, fill=structure!30},
-    every path/.append style={structure,},
-  },
-  Structure on/.style={alt=#1{Structure}{}},
-  Fade/.style={
-    every state/.append style={black!30, fill=black!10},
-    every path/.append style={black!30,},
-  },
-  Fade on/.style={alt=#1{Fade}{}},
   initial on/.style={alt=#1{initial}{}},
   initial left on/.style={alt=#1{initial left}{}},
   initial right on/.style={alt=#1{initial right}{}},
@@ -163,7 +143,6 @@
   \fi%
 }
 
-
 \define@key{sm@options}{width}{\renewcommand\sm@cell@width{#1}}
 \define@key{sm@options}{height}{\renewcommand\sm@cell@height{#1}}
 \define@key{sm@options}{headsize}{\renewcommand\sm@head@size{#1}}
@@ -261,35 +240,33 @@
     \sm@draw@move{#1}{\sm@from}{\value{sm@pos}}
 }}
 
-\newcommand<>\smState[1][]{%
-  \sm@style@set#2{sm@style@state}{state}
-  \sm@style@set{sm@style@fill}{sm@fill@default}
-  #1%
-  \node#2[sm@style@fill,sm@style@state, state]%
-}
+%\newcommand<>\smState[1][]{%
+%  \sm@style@set#2{sm@style@state}{state}
+%  \sm@style@set{sm@style@fill}{sm@fill@default}
+%  #1%
+%  \node#2[sm@style@fill,sm@style@state, state]%
+%}
+% 
+%\newcommand<>\smPath[1][]{%
+%  \sm@style@set#2{sm@style@path}{-latex}
+%  #1%
+%  \path#2[sm@style@path]%
+%}
+%\newcommand<>\smStateStyle[1]{\only#2{\tikzset{sm@style@state/.append style={#1},}}}
+%\newcommand<>\smPathStyle[1]{\only#2{\tikzset{sm@style@path/.append style={#1},}}}
 
-\newcommand<>\smPath[1][]{%
-  \sm@style@set#2{sm@style@path}{-latex}
-  #1%
-  \path#2[sm@style@path]%
-}
-
-
-\newcommand<>\smStateStyle[1]{\only#2{\tikzset{sm@style@state/.append style={#1},}}}
-\newcommand<>\smPathStyle[1]{\only#2{\tikzset{sm@style@path/.append style={#1},}}}
-
-\newcommand<>\smDraw[2][]{%
-  \uncover#3{%
-    \tikzset{sm@style@state/.style={},}%
-    \tikzset{sm@style@path/.style={-latex},}%
-    #1%
-    \tikzset{every state/.append style={sm@style@state},}%
-    \tikzset{every path/.append style={sm@style@path},}%
-    #2%
-    \tikzset{sm@style@state/.style={},}%
-    \tikzset{sm@style@path/.style={-latex},}%
-  }
-}
+%\newcommand<>\smDraw[2][]{%
+%  \uncover#3{%
+%    \tikzset{sm@style@state/.style={},}%
+%    \tikzset{sm@style@path/.style={-latex},}%
+%    #1%
+%    \tikzset{every state/.append style={sm@style@state},}%
+%    \tikzset{every path/.append style={sm@style@path},}%
+%    #2%
+%    \tikzset{sm@style@state/.style={},}%
+%    \tikzset{sm@style@path/.style={-latex},}%
+%  }
+%}
 
 
 
@@ -300,11 +277,11 @@
 \newcommand<>\smAlert             {\smFill#1{sm@fill@alert!25}     \sm@style@append#1{sm@style@path}{sm@fill@alert}\sm@style@append#1{sm@style@state}{fill=sm@fill@alert!20}}
 \newcommand<>\smExample           {\smFill#1{sm@fill@example!25}   \sm@style@append#1{sm@style@path}{sm@fill@example}\sm@style@append#1{sm@style@state}{fill=sm@fill@example!20}}
 \newcommand<>\smStructure         {\smFill#1{sm@fill@structure!25} \sm@style@append#1{sm@style@path}{sm@fill@structure}\sm@style@append#1{sm@style@state}{fill=sm@fill@structure!20}}
-\newcommand<>\smInitial           {\only#1{\sm@style@append{sm@style@state}{initial}}}
-\newcommand<>\smInitialAbove      {\only#1{\sm@style@append{sm@style@state}{initial above}}}
-\newcommand<>\smInitialBelow      {\only#1{\sm@style@append{sm@style@state}{initial below}}}
-\newcommand<>\smInitialRight      {\only#1{\sm@style@append{sm@style@state}{initial right}}}
-\newcommand<>\smAccepting         {\only#1{\sm@style@append#1{sm@style@state}{accepting}}}
+%\newcommand<>\smInitial           {\only#1{\sm@style@append{sm@style@state}{initial}}}
+%\newcommand<>\smInitialAbove      {\only#1{\sm@style@append{sm@style@state}{initial above}}}
+%\newcommand<>\smInitialBelow      {\only#1{\sm@style@append{sm@style@state}{initial below}}}
+%\newcommand<>\smInitialRight      {\only#1{\sm@style@append{sm@style@state}{initial right}}}
+%\newcommand<>\smAccepting         {\only#1{\sm@style@append#1{sm@style@state}{accepting}}}
 
 \newcommand\smCoord[1]{%
   \node[rectangle,minimum width=\sm@cell@width,minimum height=\sm@cell@height, anchor=center]

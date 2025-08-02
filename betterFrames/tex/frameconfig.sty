@@ -20,10 +20,10 @@
   \fill[#1, rounded corners]([yshift=1.8ex,xshift=-.5ex]pic cs:start#2) rectangle ([yshift=-.5ex,xshift=.5ex]pic cs:end#2);
 }
 
-\newcommand<>\tfBg[2]{%
+\newcommand<>\tfBg[3]{%
   \stepcounter{tf@alert@cpt}%
   \tikzmark{start\thetf@alert@cpt}#2\tikzmark{end\thetf@alert@cpt}%
-  \only#3{%
+  #3#4{%
     \gappto\tf@alert@hook{\tf@alert@highlight[}%
       \xappto\tf@alert@hook{#1}%
       \gappto\tf@alert@hook{][}%
@@ -32,10 +32,36 @@
   }%
 }
 
+\newcommand<>\tfAlert[1]{\tfBg#2{alert!20}{#1}{\only}}
+\newcommand<>\tfStructure[1]{\tfBg#2{structure!20}{#1}{\only}}
+\newcommand<>\tfExample[1]{\tfBg#2{example!20}{#1}{\only}}
+\newcommand<>\tfFade[1]{\tfBg#2{black!10}{#1}{\only}}
+ 
+%\newcommand<>\Alert[1]{\tfBg#2{alert!20}{#1}{\only}}
+%\newcommand<>\Structure[1]{\tfBg#2{structure!20}{#1}{\only}}
+%\newcommand<>\Example[1]{\tfBg#2{example!20}{#1}{\only}}
+%\newcommand<>\Fade[1]{\tfBg#2{black!10}{#1}{\only}}
+% 
+%\newcommand<>\Alertb[1]{\tfBg#2{alert!20}{#1}{\onlyb}}
+%\newcommand<>\Structureb[1]{\tfBg#2{structure!20}{#1}{\onlyb}}
+%\newcommand<>\Exampleb[1]{\tfBg#2{example!20}{#1}{\onlyb}}
+%\newcommand<>\Fadeb[1]{\tfBg#2{black!10}{#1}{\onlyb}}
+% 
+%\newcommand<>\Alerth[1]{\tfBg#2{alert!20}{#1}{\onlyh}}
+%\newcommand<>\Structureh[1]{\tfBg#2{structure!20}{#1}{\onlyh}}
+%\newcommand<>\Exampleh[1]{\tfBg#2{example!20}{#1}{\onlyh}}
+%\newcommand<>\Fadeh[1]{\tfBg#2{black!10}{#1}{\onlyh}}
 
-\newcommand<>\tfAlert[1]{\tfBg#2{alert!20}{#1}}
-\newcommand<>\tfStructure[1]{\tfBg#2{structure!20}{#1}}
-\newcommand<>\tfExample[1]{\tfBg#2{example!20}{#1}}
+
+%\newcommand<>\Alert[1]{\tfBg#2{alert!20}{#1}}
+%\newcommand<>\Structure[1]{\tfBg#2{structure!20}{#1}}
+%\newcommand<>\Example[1]{\tfBg#2{example!20}{#1}}
+%\newcommand<>\Fade[1]{\tfBg#2{black!10}{#1}}
+% 
+%\newcommand<>\Alertb[1]{\tfBg#2{alert!20}{#1}}
+%\newcommand<>\Structureb[1]{\tfBg#2{structure!20}{#1}}
+%\newcommand<>\Exampleb[1]{\tfBg#2{example!20}{#1}}
+%\newcommand<>\Fadeb[1]{\tfBg#2{black!10}{#1}}
 
 \tikzset{tz@style@tikz@added/.style={},}
 \tikzset{tz@style@node@added/.style={},}
@@ -84,26 +110,40 @@
   \tikzset{tz@style@node@added/.append style={align=#1}}
 }
 
-\newcommand<>\tf[2][]{%
-  \only#3{%
-    \begingroup%
-    \tikzset{tz@style@tikz@added/.style={},}%
-    \tikzset{tz@style@node@added/.style={},}%
-    \setkeys{tf@node@options}{#1}%
-    \renewcommand{\tf@alert@hook}{}%
-    \begin{tikzpicture}[tz@style@tikz]%
-      \node[tz@style@node, tz@style@node@added,scale=\tf@node@scale] at (\tf@node@x, \tf@node@y) {#2};%
-      \begin{scope}[on background layer]%
-        \tf@alert@hook%
-      \end{scope}%
-    \end{tikzpicture}%
-    \endgroup%
-  }%
+\newcommand<>\tf@draw[2]{%
+  \begingroup%
+  \tikzset{tz@style@tikz@added/.style={},}%
+  \tikzset{tz@style@node@added/.style={},}%
+  \setkeys{tf@node@options}{#1}%
+  \renewcommand{\tf@alert@hook}{}%
+  \begin{tikzpicture}[tz@style@tikz]%
+    \node[tz@style@node, tz@style@node@added,scale=\tf@node@scale] at (\tf@node@x, \tf@node@y) {#2};%
+    \begin{scope}[on background layer]%
+      \tf@alert@hook%
+    \end{scope}%
+  \end{tikzpicture}%
+  \endgroup%
 }
 
+\newcommand<>\tf[2][]{\only#3{\tf@draw{#1}{#2}}}
 \newcommand<>\tfBlock[3][]{\tf#4[text,#1]{\begin{block}{#2}#3\end{block}}}
 \newcommand<>\tfAlertBlock[3][]{\tf#4[text,#1]{\begin{alertblock}{#2}#3\end{alertblock}}}
 \newcommand<>\tfExampleBlock[3][]{\tf#4[text,#1]{\begin{exampleblock}{#2}#3\end{exampleblock}}}
+
+\newcommand<>\on[2][]{\only#3{\tf@draw{#1}{#2}}}
+\newcommand<>\onBlock[3][]{\on#4[text,#1]{\begin{block}{#2}#3\end{block}}}
+\newcommand<>\onAlertBlock[3][]{\on#4[text,#1]{\begin{alertblock}{#2}#3\end{alertblock}}}
+\newcommand<>\onExampleBlock[3][]{\on#4[text,#1]{\begin{exampleblock}{#2}#3\end{exampleblock}}}
+
+\newcommand<>\ob[2][]{\onlyb#3{\tf@draw{#1}{#2}}}
+\newcommand<>\obBlock[3][]{\ob#4[text,#1]{\begin{block}{#2}#3\end{block}}}
+\newcommand<>\obAlertBlock[3][]{\ob#4[text,#1]{\begin{alertblock}{#2}#3\end{alertblock}}}
+\newcommand<>\obExampleBlock[3][]{\ob#4[text,#1]{\begin{exampleblock}{#2}#3\end{exampleblock}}}
+
+\newcommand<>\oh[2][]{\onlyh#3{\tf@draw{#1}{#2}}}
+\newcommand<>\ohBlock[3][]{\oh#4[text,#1]{\begin{block}{#2}#3\end{block}}}
+\newcommand<>\ohAlertBlock[3][]{\oh#4[text,#1]{\begin{alertblock}{#2}#3\end{alertblock}}}
+\newcommand<>\ohExampleBlock[3][]{\oh#4[text,#1]{\begin{exampleblock}{#2}#3\end{exampleblock}}}
 
 \newcommand\tf@image@height{}
 \newcommand\tf@image@width{}
@@ -164,12 +204,5 @@
   \endgroup%
 }
 
-%\newcommand{\tabularcell}[2][3cm]{%
-%  \begin{minipage}{#1}%
-%    \vspace{1mm}\begin{center}%
-%      #2%
-%    \end{center}\vspace{-1.5mm}%
-%  \end{minipage}%
-%}
 \endinput
 
