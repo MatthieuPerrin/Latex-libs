@@ -9,19 +9,78 @@
 \RequirePackage{xparse}
 \RequirePackage{tikz}
 \usetikzlibrary{automata}
+\usetikzlibrary{overlay-beamer-styles}
 
 \providecommand{\blank}{\ensuremath{\#}}
 
 \newcommand<>\sm@style@append[2]{\only#3{\tikzset{#1/.append style={#2},}}}
 \newcommand<>\sm@style@set[2]{\only#3{\tikzset{#1/.style={#2},}}}
-\tikzset{smAutomaton/.style={shorten >=1pt,node distance=2cm,on grid,auto,initial text=, every initial by arrow/.style={-latex,},  loop/.append style={looseness=5}},}
+
+
 \tikzset{
-  smPushdown/.style={smAutomaton, initial text=$\diamond$},
-  sm@style@state/.style={state},
+  Alert/.style={
+    every state/.append style={alert, fill=alert!30},
+    every path/.append style={alert,},
+  },
+  Alert on/.style={alt=#1{Alert}{}},
+  Example/.style={
+    every state/.append style={example, fill=example!30},
+    every path/.append style={example,},
+  },
+  Example on/.style={alt=#1{Example}{}},
+  Structure/.style={
+    every state/.append style={structure, fill=structure!30},
+    every path/.append style={structure,},
+  },
+  Structure on/.style={alt=#1{Structure}{}},
+  Fade/.style={
+    every state/.append style={black!30, fill=black!10},
+    every path/.append style={black!30,},
+  },
+  Fade on/.style={alt=#1{Fade}{}},
+  initial on/.style={alt=#1{initial}{}},
+  initial left on/.style={alt=#1{initial left}{}},
+  initial right on/.style={alt=#1{initial right}{}},
+  initial above on/.style={alt=#1{initial above}{}},
+  initial below on/.style={alt=#1{initial below}{}},
+  accepting on/.style={alt=#1{accepting}{}},
+  grid size/.style={node distance=#1, x=#1, y=#1,},
 }
 
 \tikzset{
-  smBox/.style={rectangle, rounded corners, fill=structure!20, draw, align=center},
+  smBox/.style={
+    rectangle,
+    rounded corners,
+    fill=structure!20,
+    draw,
+    align=center
+  },
+  sm@style@state/.style={
+    state
+  },
+  smStateMachine/.style={
+    shorten >=1pt, on grid, auto,
+    initial text=,
+    every initial by arrow/.append style={-latex,},
+    every edge/.append style={-latex,},
+    loop/.append style={looseness=5},
+  },
+  smAutomaton/.style={
+    smStateMachine,
+    grid size=12mm,
+  },
+  smPushdown/.style={
+    smStateMachine,
+    grid size=15mm,
+    initial text=$\diamond$
+  },
+  smTuringMachine/.style={
+    smStateMachine,
+    grid size=20mm,
+  },
+  automaton/.style={smAutomaton,},
+  pushdown/.style={smPushdown,},
+  turingMachine/.style={smTuringMachine,},
 }
 
 \newcommand\sm@cell@width{6mm}
@@ -29,8 +88,6 @@
 \newcommand\sm@head@size{2mm}
 \newcommand\sm@draw@nextCell{}
 \newcommand\sm@array@name{}
-
-
 
 \colorlet{sm@head@color}{black}
 \colorlet{sm@fill@alert}{black!30}
@@ -344,20 +401,21 @@
   \draw (sm@array@pos@top-west) -- (sm@array@pos@current.south west);
 }
 
-\newcommand\smLine[1]{%
+\newcommand\smLine[2][]{%
   \coordinate[
     rectangle,
     text width=\sm@array@column@width,
     text height=\sm@array@height,
     anchor=north,
-    inner sep=0pt
+    inner sep=0pt,
+    #1
   ] (sm@array@pos@current) at (sm@array@pos@current.south);
   \node[
     text width=\sm@array@column@width,
     align=center,
     inner sep=3pt,
     anchor=center
-  ] at (sm@array@pos@current.center) {#1};
+  ] at (sm@array@pos@current.center) {#2};
   \draw (sm@array@pos@current.south west) -- (sm@array@pos@current.south east);
 }
 
