@@ -47,8 +47,8 @@
   node/.code = \trees@setstyle@node{#1},
   sons/.code = \trees@setstyle@sons{#1},
   style/.code = \trees@setstyle@sons{#1}\trees@setstyle@edge{#1}\trees@setstyle@node{#1},
-  /trees@options/.unknown/.code = \trees@setstyle@node{\pgfkeyscurrentname=#1},%{\typeout{unknown ``\pgfkeyscurrentkey'' ``\pgfkeyscurrentname'' ``#1''}},
-%  /trees@options/.unknown/.style = {style={\pgfkeyscurrentname=#1}}%\trees@setstyle@node{\pgfkeyscurrentname=#1}%{\typeout{unknown ``\pgfkeyscurrentkey'' ``\pgfkeyscurrentname'' ``#1''}},
+%  /trees@options/.unknown/.style = {node={\pgfkeyscurrentname}}%\trees@setstyle@node{\pgfkeyscurrentname=#1}%{\typeout{unknown ``\pgfkeyscurrentkey'' ``\pgfkeyscurrentname'' ``#1''}},
+  /trees@options/.unknown/.code = {\typeout{unknown ==== ``\pgfkeyscurrentkey'' ==== ``\pgfkeyscurrentname'' ==== ``#1''}},
 }
 %\define@key{trees@options}{at}{\edef\trees@option@at{#1}}
 %\define@key{trees@options}{name}{\edef\trees@current@node{#1}}
@@ -61,7 +61,7 @@
 \define@key{trees@internals@options}{edge}{\edef\trees@internal@edge@style{#1}}
 
 \newcommand\tree@draw@leaf[1]{
-  \tikzset{tree local node/.style/.expanded={\trees@option@sons@style@saved,\trees@option@node@style},}
+  \tikzset{tree local node/.style/.expanded={\trees@option@node@style,\trees@option@sons@style@saved},}
   \ifdefempty{\trees@option@at}{
     \stepcounter{trees@leaves@counter}
     \node[tree node,tree local node] (\trees@current@node) at (\thetrees@leaves@counter,0) {#1};
@@ -71,7 +71,7 @@
 }
 
 \newcommand\tree@draw@internal[1]{
-  \tikzset{tree local node/.style/.expanded={\trees@option@sons@style@saved,\trees@option@node@style},}
+  \tikzset{tree local node/.style/.expanded={\trees@option@node@style,\trees@option@sons@style@saved},}
   \ifdefempty{\trees@option@at}{
     \edef\trees@sons@nodes@list{}
     \foreach \c in \trees@sons@list {%
@@ -100,9 +100,14 @@
   \edef\trees@option@edge@style{}
   \edef\trees@option@sons@style@saved{\trees@option@sons@style}
   \edef\trees@option@sons@style{}
-%  \pgfkeys{/trees@options/{#1}}
-  \pgfqkeys{/trees@options}{structure,at={(2,1)},style={on=<4->}}%  \pgfkeys{/trees@options/alert,/trees@options/on=<4->}
-  \pgfqkeys{/trees@options}{#1}%  \pgfkeys{/trees@options/alert,/trees@options/on=<4->}
+  \foreach \c in {#1} {
+    \typeout{option : ``/trees@options/\c''}
+%    \edef\arg{}
+    \pgfkeys{/trees@options/{node={structure}}}
+  }
+%      \pgfkeys{/trees@options/on=<2->}
+%      \pgfkeys{/trees@options/alert=<3->}
+%    }
   %
   \ifdefempty{\trees@current@node}{
     \stepcounter{trees@nodes@counter}
