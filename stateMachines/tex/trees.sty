@@ -100,11 +100,11 @@
   \edef\trees@option@edge@style{}
   \edef\trees@option@sons@style@saved{\trees@option@sons@style}
   \edef\trees@option@sons@style{}
-  \foreach \c in {#1} {
-    \typeout{option : ``/trees@options/\c''}
+%  \foreach \c in {#1} {
+%    \typeout{option : ``/trees@options/\c''}
 %    \edef\arg{}
-    \pgfkeys{/trees@options/{node={structure}}}
-  }
+    \pgfkeys{/trees@options/name=(a)}
+%  }
 %      \pgfkeys{/trees@options/on=<2->}
 %      \pgfkeys{/trees@options/alert=<3->}
 %    }
