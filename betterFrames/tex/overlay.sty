@@ -5,29 +5,31 @@
 \ProvidesPackage{overlay}[2025/06/16 Package for advanced overlay management]
 
 \RequirePackage{beamerbaseoverlay}
-%\RequirePackage{xstring}
 
-%\let\overlays@orig@alt=\alt
-%\let\overlays@orig@temporal=\temporal
-%\let\overlays@orig@onlyif=\onlyif
-%\let\overlays@orig@visible=\visible
-%\let\overlays@orig@invisible=\invisible
-%\let\overlays@orig@emph=\emph
+\colorlet{structureColor}{structure}
+\colorlet{alertColor}{alert}
+\colorlet{exampleColor}{example}
+\colorlet{fadeColor}{black!30}
 
 \newcommand<>\nothing[1]{}
+\newcommand<>\altinverse[2]{#2}
 \@ifclasswith{beamer}{handout}{
   \let\onlyb\nothing
   \let\uncoverb\nothing
   \let\uncoverb\nothing
+  \let\altb\altinverse
   %
   \let\onlyh\only
   \let\uncoverh\uncover
+  \let\alth\alt
 }{
   \let\onlyb\only
   \let\uncoverb\uncover
+  \let\altb\alt
   %
   \let\onlyh\nothing
   \let\uncoverh\nothing
+  \let\alth\altinverse
 }
 
 \@ifclasswith{beamer}{handout}{\tikzset{
@@ -37,107 +39,118 @@
     overlay@handout@alt/.style n args={3}{alt=#1{#3}{#2}},
     overlay@beamer@alt/.style n args={3}{alt=#1{#2}{#3}},
 }}
- 
-\tikzset{
-  on/.style         2 args={alt=#1{#2}{}},
-  handout/.style          ={overlay@handout@alt={<1->}{#1}{}},
-  handout on/.style 2 args={overlay@handout@alt={#1}{#2}{}},
-  beamer/.style           ={overlay@beamer@alt={<1->}{#1}{}},
-  beamer on/.style  2 args={overlay@beamer@alt={#1}{#2}{}},
-}
 
+\tikzset{
+  invisible/.style={opacity=0,},
+  beamer/.style   ={overlay@beamer@alt={<1->}{}{invisible}},
+  handout/.style  ={overlay@handout@alt={<1->}{}{invisible}},
+  on/.style       ={alt=#1{}{invisible}},
+  oh/.style       ={overlay@handout@alt={#1}{}{invisible}},
+  ob/.style       ={overlay@beamer@alt={#1}{}{invisible}},
+  %
+  apply b/.style        ={overlay@beamer@alt={<1->}{#1}{}},
+  apply h/.style        ={overlay@handout@alt={<1->}{#1}{}},
+  apply on/.style 2 args={alt=#1{#2}{}},
+  apply oh/.style 2 args={overlay@handout@alt={#1}{#2}{}},
+  apply ob/.style 2 args={overlay@beamer@alt={#1}{#2}{}},
+}
 
 \newcommand\overlay@completestyle[1]{
   \tikzset{
-    #1 b/.style  ={beamer={#1}},
-    #1 h/.style  ={handout={#1}},
-    #1 on/.style ={on={##1}{#1}},
-    #1 ob/.style ={beamer on={##1}{#1}},
-    #1 oh/.style ={handout on={##1}{#1}},
+    #1 b/.style  ={apply b={#1}},
+    #1 h/.style  ={apply h={#1}},
+    #1 on/.style ={apply on={##1}{#1}},
+    #1 ob/.style ={apply ob={##1}{#1}},
+    #1 oh/.style ={apply oh={##1}{#1}},
   }
 }
-
-\newcommand\overlay@createstyle[2]{
-  \tikzset{#1/.style    ={#2},}
-  \overlay@completestyle{#1}
-}
-
-\overlay@createstyle{structure}{
-%  every state/.append style={structure, fill=structure!30},
-%  every path/.append style={structure,},
-}
-\overlay@createstyle{example}{
-%  every state/.append style={example, fill=example!30},
-%  every path/.append style={example,},
-}
-\overlay@createstyle{alert}{
-%  every state/.append style={alert, fill=alert!30},
-%  every path/.append style={alert,},
-}
-\overlay@createstyle{fade}{
-%  every state/.append style={black!30, fill=black!10},
-%  every path/.append style={black!30,},
-}
-
 
 \tikzset{
   fill highlighted/.style={},
   text highlighted/.style={},
   draw highlighted/.style={},
-  alert/.append style={
+  alert/.append style={alertColor,
     draw highlighted/.append style={draw=alert},
     text highlighted/.append style={text=alert},
     fill highlighted/.append style={fill=alert!30},
-%    every state/.append style={draw highlighted, text highlighted, fill highlighted,},
   },
-  example/.append style={
+  example/.append style={exampleColor,
     draw highlighted/.append style={draw=example},
     text highlighted/.append style={text=example},
     fill highlighted/.append style={fill=example!30},
-%    every state/.append style={draw highlighted, text highlighted, fill highlighted,},
   },
-  structure/.append style={
+  structure/.append style={structureColor,
     draw highlighted/.append style={draw=structure},
     text highlighted/.append style={text=structure},
     fill highlighted/.append style={fill=structure!30},
-%    every state/.append style={draw highlighted, text highlighted, fill highlighted,},
   },
-  fade/.append style={
+  fade/.append style={fadeColor,
     draw highlighted/.append style={draw=black!30},
     text highlighted/.append style={text=black!30},
     fill highlighted/.append style={fill=black!10},
-%    every state/.append style={draw highlighted, text highlighted, fill highlighted,},
   },
-  every path/.append style={draw highlighted, text highlighted, },
 }
 
-%\tikzset{
-%  thestate/.style={
-%    draw highlighted,
-%    text highlighted,
-%    fill highlighted,
-%    draw,                 % draw a border
-%    rectangle,               % node shape = circle
-%    inner sep=2pt,        % padding inside the circle
-%    outer sep=0pt         % no extra space outside
-%    minimum size=6mm,     % make sure it’s at least 6 mm across
-%%    thick                 % use a thicker line for the circle
-%  },
-%}
+\overlay@completestyle{structure}{}
+\overlay@completestyle{example}{}
+\overlay@completestyle{alert}{}
+\overlay@completestyle{fade}{}
 
-\newcommand<>\state[1][]{\node#2[draw highlighted, text highlighted, fill highlighted, #1, state]}
-
-
-\newcommand\highlight[2][]{%
+\newcommand\overlay@highlight@text[2]{%
   \tikz[baseline=(n.base)]{%
     \node[inner xsep=0pt, inner ysep=0pt, outer sep=0pt, rounded corners] (n) {#2};%
-    \begin{pgfonlayer}{background}
-      \node[rounded corners, fit=(n), inner xsep=3pt, inner ysep=1pt, outer sep=0pt, #1, fill highlighted] (bg) {};
-    \end{pgfonlayer}
-    \pgfresetboundingbox
+    \begin{pgfonlayer}{background}%
+      \node[rounded corners, fit=(n), inner xsep=3pt, inner ysep=1pt, outer sep=0pt, #1, fill highlighted] (bg) {};%
+    \end{pgfonlayer}%
+    \pgfresetboundingbox%
     \useasboundingbox (n.south west) rectangle (n.north east);%
   }%
 }
+\newcommand\overlay@highlight[2]{\ifmmode\overlay@highlight@text{#1}{$#2$}\else\overlay@highlight@text{#1}{#2}\fi}
+
+\newcommand<>\highlight[2][]{\alt#3{\overlay@highlight{#1}{#2}}{#2}}
+\newcommand<>\highlightb[2][]{\altb#3{\overlay@highlight{#1}{#2}}{#2}}
+\newcommand<>\textcolor [2]{\alt#3{{\color{#1}#2}}{#2}}
+\newcommand<>\textcolorb [2]{\altb#3{{\color{#1}#2}}{#2}}
+\newcommand<>\background [3][]{\highlight#4[fill=#2,#1]{#3}}
+\newcommand<>\backgroundb[3][]{\highlightb#4[fill=#2,#1]{#3}}
+
+\newcommand<>\overlay@alert [1]{\textcolor#2{alert}{#1}}
+\newcommand<>\overlay@alertb[1]{\textcolorb#2{alert}{#1}}
+\newcommand<>\overlay@Alert [2][]{\background#3[#1]{alert!30}{#2}}
+\newcommand<>\overlay@Alertb[2][]{\backgroundb#3[#1]{alert!30}{#2}}
+
+\newcommand<>\overlay@example [1]{\textcolor#2{example}{#1}}
+\newcommand<>\overlay@exampleb[1]{\textcolorb#2{example}{#1}}
+\newcommand<>\overlay@Example [2][]{\background#3[#1]{example!30}{#2}}
+\newcommand<>\overlay@Exampleb[2][]{\backgroundb#3[#1]{example!30}{#2}}
+
+\newcommand<>\overlay@structure [1]{\textcolor#2{structure}{#1}}
+\newcommand<>\overlay@structureb[1]{\textcolorb#2{structure}{#1}}
+\newcommand<>\overlay@Structure [2][]{\background#3[#1]{structure!30}{#2}}
+\newcommand<>\overlay@Structureb[2][]{\backgroundb#3[#1]{structure!30}{#2}}
+
+\newcommand<>\overlay@fade [1]{\textcolor#2{black!30}{#1}}
+\newcommand<>\overlay@fadeb[1]{\textcolorb#2{black!30}{#1}}
+\newcommand<>\overlay@Fade [2][]{\background#3[#1]{black!10}{#2}}
+\newcommand<>\overlay@Fadeb[2][]{\backgroundb#3[#1]{black!10}{#2}}
+
+\let\alert\overlay@alert   \let\example\overlay@example   \let\structure\overlay@structure   \let\fade\overlay@fade
+\let\alertb\overlay@alertb \let\exampleb\overlay@exampleb \let\structureb\overlay@structureb \let\fadeb\overlay@fadeb
+\let\Alert\overlay@Alert   \let\Example\overlay@Example   \let\Structure\overlay@Structure   \let\Fade\overlay@Fade
+\let\Alertb\overlay@Alertb \let\Exampleb\overlay@Exampleb \let\Structureb\overlay@Structureb \let\Fadeb\overlay@Fadeb
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -156,5 +169,7 @@
   }%
   \endgroup
 }
+
+\usetikzlibrary{fit,backgrounds,automata,positioning,overlay-beamer-styles,matrix,shapes}
 
 \endinput

@@ -1,0 +1,134 @@
+% SPDX-License-Identifier: CC-BY-SA-4.0
+% Author: Matthieu Perrin
+
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{trees}[2025/06/08 Package for trees]
+
+\RequirePackage{xcolor}
+\RequirePackage{keyval}
+\RequirePackage{etoolbox}
+\RequirePackage{xparse}
+\RequirePackage{tikz}
+\usetikzlibrary{automata}
+\usetikzlibrary{overlay-beamer-styles}
+\usetikzlibrary{trees}
+
+
+
+\tikzset{
+  tree node/.style={},
+  tree edge/.style={-latex},
+}
+
+\newcounter{trees@nodes@counter}
+\setcounter{trees@nodes@counter}{0}
+\newcounter{trees@leaves@counter}
+\setcounter{trees@leaves@counter}{0}
+
+\edef\trees@sons@list{}
+\newcommand\trees@option@at{}
+\newcommand\trees@option@edge@style{}
+\newcommand\trees@option@node@style{}
+\newcommand\trees@option@sons@style{}
+\newcommand\trees@internal@son{}
+\newcommand\trees@internal@node@style{}
+\newcommand\trees@internal@edge@style{}
+\newcommand\trees@current@node{}
+\newcommand\trees@setstyle@node[1]{\edef\trees@option@node@style{\trees@option@node@style,#1}}
+\newcommand\trees@setstyle@edge[1]{\edef\trees@option@edge@style{\trees@option@edge@style,#1}}
+\newcommand\trees@setstyle@sons[1]{\edef\trees@option@sons@style{,#1}}
+%\newcommand\trees@setstyle@all[1]{\trees@setstyle@sons{#1}\trees@setstyle@edge{#1}\trees@setstyle@node{#1}}
+
+\pgfkeys{
+  /trees@options/.is family,
+  at/.code   = \edef\trees@option@at{#1},
+  name/.code = \edef\trees@current@node{#1},
+  edge/.code = \trees@setstyle@edge{#1},
+  node/.code = \trees@setstyle@node{#1},
+  sons/.code = \trees@setstyle@sons{#1},
+  style/.code = \trees@setstyle@sons{#1}\trees@setstyle@edge{#1}\trees@setstyle@node{#1},
+  /trees@options/.unknown/.code = \trees@setstyle@node{\pgfkeyscurrentname=#1},%{\typeout{unknown ``\pgfkeyscurrentkey'' ``\pgfkeyscurrentname'' ``#1''}},
+%  /trees@options/.unknown/.style = {style={\pgfkeyscurrentname=#1}}%\trees@setstyle@node{\pgfkeyscurrentname=#1}%{\typeout{unknown ``\pgfkeyscurrentkey'' ``\pgfkeyscurrentname'' ``#1''}},
+}
+%\define@key{trees@options}{at}{\edef\trees@option@at{#1}}
+%\define@key{trees@options}{name}{\edef\trees@current@node{#1}}
+%\define@key{trees@options}{edge}{\trees@setstyle@edge{#1}}
+%\define@key{trees@options}{node}{\trees@setstyle@node{#1}}
+%\define@key{trees@options}{sons}{\trees@setstyle@sons{#1}}
+%\define@key{trees@options}{style}{\trees@setstyle@sons{#1}\trees@setstyle@edge{#1}\trees@setstyle@node{#1}}
+%\define@key{trees@options}{.unknown}{\trees@setstyle@sons{#1}\trees@setstyle@edge{#1}\trees@setstyle@node{#1}}
+\define@key{trees@internals@options}{son}{\edef\trees@internal@son{#1}}
+\define@key{trees@internals@options}{edge}{\edef\trees@internal@edge@style{#1}}
+
+\newcommand\tree@draw@leaf[1]{
+  \tikzset{tree local node/.style/.expanded={\trees@option@sons@style@saved,\trees@option@node@style},}
+  \ifdefempty{\trees@option@at}{
+    \stepcounter{trees@leaves@counter}
+    \node[tree node,tree local node] (\trees@current@node) at (\thetrees@leaves@counter,0) {#1};
+  }{
+    \node[tree node,tree local node] (\trees@current@node) at \trees@option@at {#1};
+  }
+}
+
+\newcommand\tree@draw@internal[1]{
+  \tikzset{tree local node/.style/.expanded={\trees@option@sons@style@saved,\trees@option@node@style},}
+  \ifdefempty{\trees@option@at}{
+    \edef\trees@sons@nodes@list{}
+    \foreach \c in \trees@sons@list {%
+      \edef\temp{\noexpand\setkeys{trees@internals@options}{\c}}\temp
+      \xdef\trees@sons@nodes@list{\trees@sons@nodes@list(\trees@internal@son.center)}
+    }%
+    \node[fit=\trees@sons@nodes@list, inner sep=0, outer sep=0] (box) {};
+    \node[tree node,tree local node] (\trees@current@node) at ($(box.north)+(0,1)$) {#1};
+  }{
+    \node[tree node,tree local node] (\trees@current@node) at \trees@option@at {#1};
+  }
+  \foreach \c in \trees@sons@list {%
+    \edef\temp{\noexpand\setkeys{trees@internals@options}{\c}}%
+    \temp
+    \tikzset{tree local edge/.style/.expanded={\trees@option@sons@style,\trees@internal@edge@style},}
+    \path[tree edge, tree local edge] (\trees@current@node) edge (\trees@internal@son);
+  }%
+}
+
+\newcommand\tree[3][]{
+  \begingroup
+  \edef\trees@current@node{}
+  \edef\trees@option@at{}
+  \edef\trees@option@node@style{}
+  \edef\trees@option@edge@style{}
+  \edef\trees@option@edge@style{}
+  \edef\trees@option@sons@style@saved{\trees@option@sons@style}
+  \edef\trees@option@sons@style{}
+%  \pgfkeys{/trees@options/{#1}}
+  \pgfqkeys{/trees@options}{structure,at={(2,1)},style={on=<4->}}%  \pgfkeys{/trees@options/alert,/trees@options/on=<4->}
+  \pgfqkeys{/trees@options}{#1}%  \pgfkeys{/trees@options/alert,/trees@options/on=<4->}
+  %
+  \ifdefempty{\trees@current@node}{
+    \stepcounter{trees@nodes@counter}
+    \edef\trees@current@node{trees@nodes@\thetrees@nodes@counter}%
+  }{}
+  %
+  %
+  \edef\trees@sons@list@toadd{son={\trees@current@node}, edge={\trees@option@edge@style}}
+  \edef\trees@sons@list{}
+  #3
+  \ifdefempty{\trees@sons@list}{\tree@draw@leaf{#2}}{\tree@draw@internal{#2}}
+  \xdef\trees@sons@list@toadd@global{\trees@sons@list@toadd}
+  \endgroup
+  \ifdefempty{\trees@sons@list}{}{\edef\trees@sons@list{\trees@sons@list,}}
+  \edef\trees@sons@list{\trees@sons@list{\trees@sons@list@toadd@global}}
+}
+
+\NewDocumentEnvironment{Tree}{O{}}{%
+  \setcounter{trees@nodes@counter}{0}%
+  \setcounter{trees@leaves@counter}{0}%
+  \begin{tikzpicture}[anchor=mid,#1]%
+}{
+  \end{tikzpicture}%
+}
+
+
+
+
+\endinput
