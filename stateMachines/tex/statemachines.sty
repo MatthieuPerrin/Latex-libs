@@ -82,7 +82,7 @@
   grid north/.append style={
     execute at begin scope={
       \let\sm@head\smheadeast%
-      \let\smheadfrom\sm@head@from@east%
+      \let\sm@headfrom\sm@head@from@east%
     },
     open before/.style={open south,},
     open after/.style={open north,},
@@ -91,7 +91,7 @@
   grid south/.append style={
     execute at begin scope={
       \let\sm@head\smheadwest%
-      \let\smheadfrom\sm@head@from@west%
+      \let\sm@headfrom\sm@head@from@west%
     },
     open before/.style={open north,},%
     open after/.style={open south,},%
@@ -100,7 +100,7 @@
   grid east/.append style={
     execute at begin scope={
       \let\sm@head\smheadsouth%
-      \let\smheadfrom\sm@head@from@south%
+      \let\sm@headfrom\sm@head@from@south%
     },
     open before/.style={open west,},%
     open after/.style={open east,},%
@@ -109,7 +109,7 @@
   grid west/.append style={
     execute at begin scope={
       \let\sm@head\smheadnorth%
-      \let\smheadfrom\sm@head@from@north%
+      \let\sm@headfrom\sm@head@from@north%
     },
     open before/.style={open east,},%
     open after/.style={open west,},%
@@ -132,9 +132,6 @@
 \newcommand\smheadsouth[1][]{\sm@draw@south{\sm@head@figure[rotate=  0,#1]{3mm}}}
 \newcommand\smheadeast [1][]{\sm@draw@east {\sm@head@figure[rotate= 90,#1]{3mm}}}
 \newcommand\smheadwest [1][]{\sm@draw@west {\sm@head@figure[rotate=-90,#1]{3mm}}}
-\newcommand<>\smhead[1][]{\uncover#2{\sm@head[#1]}}
-\newcommand<>\smheadb[1][]{\uncoverb#2{\sm@head[#1]}}
-
 
 \newcommand\sm@head@figure[2][]{%
   \begin{tikzpicture}%
@@ -163,6 +160,10 @@
   \path[->,#1] (sm@head@other) edge (sm@head);
 }
 
+\newcommand<>\smhead[1][]{\uncover#2{\sm@head[#1]}}
+\newcommand<>\smheadb[1][]{\uncoverb#2{\sm@head[#1]}}
+\newcommand<>\smheadfrom[2][]{\uncover#3{\sm@headfrom[#1]{#2}}}
+\newcommand<>\smheadfromb[2][]{\uncoverb#3{\sm@headfrom[#1]{#2}}}
 
 
 
