@@ -1,0 +1,51 @@
+% SPDX-License-Identifier: CC-BY-SA-4.0
+% Author: Matthieu Perrin
+ 
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{2Darray}[2025/06/08 Package for simple arrays in tikz]
+ 
+\RequirePackage{keyval}
+\RequirePackage{etoolbox}
+\RequirePackage{xparse}
+\RequirePackage{tikz}
+
+
+\newcommand\array@column@width{1}
+\newcommand\array@column@height{1}
+\newcommand\array@column@header{}
+\define@key{array@column@options}{width}{\edef\array@column@width{#1}}
+\define@key{array@column@options}{height}{\edef\array@column@height{#1}}
+\define@key{array@column@options}{header}{\edef\array@column@header{#1}}
+ 
+\newcounter{arrays@lines@counter}
+\tikzset{
+  2Darray/.style={
+    execute at begin scope={\coordinate (2Darray@col)  at (0,0);},
+  },
+}
+ 
+\newcommand\arrayColumn[2][]{
+  \begingroup
+  \setkeys{array@column@options}{#1}%
+  \coordinate (2Darray@col-west) at (2Darray@col);
+  \coordinate (2Darray@col-east) at ($(2Darray@col)+(\array@column@width,0)$);
+  \coordinate (2Darray@col) at (2Darray@col-east);
+  \ifdefempty{\array@column@header}{}{\node[anchor=mid, yshift=1.1ex] at ($.5*(2Darray@col-west)+.5*(2Darray@col-east)$)  {\array@column@header};}
+  \setcounter{arrays@lines@counter}{0}
+  #2
+  \endgroup
+}
+ 
+\newcommand\arrayLine[2][]{
+  \edef\north{-\thearrays@lines@counter}
+  \stepcounter{arrays@lines@counter}
+  \edef\south{-\thearrays@lines@counter}
+  \path let \p1=(2Darray@col-west), \p2=(2Darray@col-east) in node[fit={(\x1,\north)(\x2,\south)}, inner sep=0, outer sep=0] (2Darray@box) {};
+  \node[#1, fill highlighted, draw=none, fit=(2Darray@box), inner sep=0, outer sep=0] {};
+  \node[draw, #1, draw highlighted, fill=none, fit=(2Darray@box), inner sep=0, outer sep=0] {};
+  \path let \p1=(2Darray@col-west), \p2=(2Darray@col-east) in 
+  node[#1, text highlighted, draw=none, fill=none, text width=\dimexpr\x2-\x1-4pt\relax, minimum height=1, align=center, inner sep=0pt, outer sep=0] at (2Darray@box.center) {#2};
+}
+ 
+\endinput
+

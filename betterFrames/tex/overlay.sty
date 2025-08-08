@@ -157,7 +157,7 @@
 
 \newcommand\overlays@text{}
  
-\newcommand<>\overlay@on[1]{\only#2{\renewcommand\overlays@text{#1}}}
+\newcommand<>\overlay@on[1]{\onlyb#2{\renewcommand\overlays@text{#1}}}
  
 \newcommand<>\oneof[2][]{%
   \begingroup%
@@ -171,5 +171,22 @@
 }
 
 \usetikzlibrary{fit,backgrounds,automata,positioning,overlay-beamer-styles,matrix,shapes}
+
+
+
+
+
+
+
+
+
+
+
+
+\let\beamer@origfootnote\footnote
+\newcommand<>\myfootnote[2][frame]{\beamer@origfootnote#3[#1]{#2}}
+\let\footnote\myfootnote
+\AtBeginEnvironment{frame}{\setcounter{footnote}{0}}
+
 
 \endinput
