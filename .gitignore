@@ -1,3 +1,4 @@
 # Ignorer tout fichier temporaire
 *~
+\#*
 .DS_Store
