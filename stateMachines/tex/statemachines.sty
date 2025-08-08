@@ -132,8 +132,8 @@
 \newcommand\smheadsouth[1][]{\sm@draw@south{\sm@head@figure[rotate=  0,#1]{3mm}}}
 \newcommand\smheadeast [1][]{\sm@draw@east {\sm@head@figure[rotate= 90,#1]{3mm}}}
 \newcommand\smheadwest [1][]{\sm@draw@west {\sm@head@figure[rotate=-90,#1]{3mm}}}
-\newcommand\smhead<>[1][]{\uncover#2{\sm@head[#1]}}
-\newcommand\smheadb<>[1][]{\uncoverb#2{\sm@head[#1]}}
+\newcommand<>\smhead[1][]{\uncover#2{\sm@head[#1]}}
+\newcommand<>\smheadb[1][]{\uncoverb#2{\sm@head[#1]}}
 
 
 \newcommand\sm@head@figure[2][]{%
