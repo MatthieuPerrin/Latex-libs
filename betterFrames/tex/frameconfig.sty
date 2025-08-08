@@ -4,19 +4,21 @@
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesPackage{frameconfig}[2025/06/16 Package for making nice frames with tikz]
 
+\RequirePackage{ccicons}
+\RequirePackage{etoolbox} 
+\RequirePackage{environ}
+
 \RequirePackage{tikz}
 \usetikzlibrary{positioning}
 \usetikzlibrary{tikzmark,fit,backgrounds}
 
-\RequirePackage{etoolbox} 
-\RequirePackage{environ}
 
 \newcommand\tf@if@empty[3]{\if#1\ \ #2\else#3\fi}
 
-\tikzset{tz@style@tikz@added/.style={},}
-\tikzset{tz@style@node@added/.style={},}
-\tikzset{tz@style@tikz/.style={remember picture,overlay,shift={(current page.center)}}}
-\tikzset{tz@style@node/.style={},}
+\tikzset{tf@style@tikz@added/.style={},}
+\tikzset{tf@style@node@added/.style={},}
+\tikzset{tf@style@tikz/.style={remember picture,overlay,shift={(current page.center)}}}
+\tikzset{tf@style@node/.style={},}
 
 \newcommand\tf@node@x{0}
 \newcommand\tf@node@y{0}
@@ -30,15 +32,15 @@
 \define@key{tf@node@options}{x}{\renewcommand\tf@node@x{#1}}
 \define@key{tf@node@options}{y}{\renewcommand\tf@node@y{#1}}
 \define@key{tf@node@options}{scale}{\renewcommand\tf@node@scale{#1}}
-\define@key{tf@node@options}{text}[true]{\renewcommand\tf@node@x{0}\tikzset{tz@style@node@added/.append style={align=left, text width=\textwidth}}}
-\define@key{tf@node@options}{width}{\tikzset{tz@style@node@added/.append style={align=left, text width=#1}}}
-\define@key{tf@node@options}{top}[0]{\renewcommand\tf@node@y{3.5cm - #1}\tikzset{tz@style@node@added/.append style={anchor=north}}}
-\define@key{tf@node@options}{bottom}[0]{\renewcommand\tf@node@y{-4.2cm + #1}\tikzset{tz@style@node@added/.append style={anchor=south}}}
-\define@key{tf@node@options}{left}{\renewcommand\tf@node@x{.5 * #1 - \textwidth/2}\tikzset{tz@style@node@added/.append style={align=left, text width=#1}}}
-\define@key{tf@node@options}{right}{\renewcommand\tf@node@x{\textwidth/2 - .5 * #1}\tikzset{tz@style@node@added/.append style={align=left, text width=#1}}}
-\define@key{tf@node@options}{center}{\renewcommand\tf@node@x{0}\tikzset{tz@style@node@added/.append style={align=left, text width=#1}}}
-\define@key{tf@node@options}{anchor}{\tikzset{tz@style@node@added/.append style={anchor=#1}}}
-\define@key{tf@node@options}{align}{\tikzset{tz@style@node@added/.append style={align=#1}}}
+\define@key{tf@node@options}{text}[true]{\renewcommand\tf@node@x{0}\tikzset{tf@style@node@added/.append style={align=left, text width=\textwidth}}}
+\define@key{tf@node@options}{width}{\tikzset{tf@style@node@added/.append style={align=left, text width=#1}}}
+\define@key{tf@node@options}{top}[0]{\renewcommand\tf@node@y{3.5cm - #1}\tikzset{tf@style@node@added/.append style={anchor=north}}}
+\define@key{tf@node@options}{bottom}[0]{\renewcommand\tf@node@y{-4.2cm + #1}\tikzset{tf@style@node@added/.append style={anchor=south}}}
+\define@key{tf@node@options}{left}{\renewcommand\tf@node@x{.5 * #1 - \textwidth/2}\tikzset{tf@style@node@added/.append style={align=left, text width=#1}}}
+\define@key{tf@node@options}{right}{\renewcommand\tf@node@x{\textwidth/2 - .5 * #1}\tikzset{tf@style@node@added/.append style={align=left, text width=#1}}}
+\define@key{tf@node@options}{center}{\renewcommand\tf@node@x{0}\tikzset{tf@style@node@added/.append style={align=left, text width=#1}}}
+\define@key{tf@node@options}{anchor}{\tikzset{tf@style@node@added/.append style={anchor=#1}}}
+\define@key{tf@node@options}{align}{\tikzset{tf@style@node@added/.append style={align=#1}}}
 
 \define@key{tf@image@options}{height}{\renewcommand\tf@image@height{#1}}
 \define@key{tf@image@options}{width}{\renewcommand\tf@image@width{#1}}
@@ -48,11 +50,11 @@
 
 \newcommand<>\tf@draw[2]{%
   \begingroup%
-  \tikzset{tz@style@tikz@added/.style={},}%
-  \tikzset{tz@style@node@added/.style={},}%
+  \tikzset{tf@style@tikz@added/.style={},}%
+  \tikzset{tf@style@node@added/.style={},}%
   \setkeys{tf@node@options}{#1}%
-  \begin{tikzpicture}[tz@style@tikz]%
-    \node[tz@style@node, tz@style@node@added,scale=\tf@node@scale] at (\tf@node@x, \tf@node@y) {#2};%
+  \begin{tikzpicture}[tf@style@tikz]%
+    \node[tf@style@node, tf@style@node@added,scale=\tf@node@scale] at (\tf@node@x, \tf@node@y) {#2};%
   \end{tikzpicture}%
   \endgroup%
 }
