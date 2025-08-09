@@ -96,7 +96,7 @@
     \foreach \c in \trees@sons@list {%
       \edef\temp{\noexpand\setkeys{trees@internals@options}{\c}}\temp
       \tikzset{tree@edges@options/.style/.expanded={\trees@option@edges@style,\trees@internal@edge@style},}
-      \path[tree edge,tree@edges@options] (\trees@current@node) edge (\trees@internal@son);
+      \path (\trees@current@node) edge[tree edge,tree@edges@options] (\trees@internal@son);
     }%
   }
   \xdef\trees@sons@list@toadd@global{\trees@sons@list@toadd}
