@@ -108,8 +108,8 @@
 }
 \newcommand\overlay@highlight[2]{\ifmmode\overlay@highlight@text{#1}{$#2$}\else\overlay@highlight@text{#1}{#2}\fi}
 
-\newcommand<>\highlight[2][]{\overlay@highlight{apply on={#3}{#1}}{#1}}
-\newcommand<>\highlightb[2][]{\altb#3{\overlay@highlight{#1}{#2}}{#2}}
+\newcommand<>\highlight[2][]{\overlay@highlight{apply on={#3}{#1}}{#2}}
+\newcommand<>\highlightb[2][]{\overlay@highlight{apply ob={#3}{#1}}{#2}}  % {\altb#3{\overlay@highlight{#1}{#2}}{#2}}
 \newcommand<>\textcolor [2]{\alt#3{{\color{#1}#2}}{#2}}
 \newcommand<>\textcolorb [2]{\altb#3{{\color{#1}#2}}{#2}}
 \newcommand<>\background [3][]{\highlight#4[fill=#2,#1]{#3}}
