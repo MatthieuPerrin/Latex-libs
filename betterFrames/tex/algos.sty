@@ -5,44 +5,93 @@
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesPackage{algos}[2025/06/09 Settings for pseudocode and code listings]
 
+\newif\ifAlgos@french\Algos@frenchtrue
+\ifnum\language=\csname l@french\endcsname\Algos@frenchtrue\else\Algos@frenchfalse\fi
+
+\newcommand\AlgoFrench{\Algos@frenchtrue\Algos@setFrench}
+\newcommand\AlgoEnglish{\Algos@frenchfalse\Algos@setEnglish}
+
+
 % -------- Algorithm2e Configuration --------
 \RequirePackage[vlined]{algorithm2e}
-
-\SetKw{Fun}{Fonction}
-\SetKw{Algorithme}{Algorithme}
-\SetKwProg{Fn}{\Fun}{}{fin}
-\SetKwProg{Proc}{Procédure}{}{fin}
-\SetKwProg{Algo}{Algorithme}{}{fin}
-
-\SetKw{Let}{soit}
-\SetKw{Lets}{soient}
-\SetKw{Tq}{tel que}
-\SetKw{Tqs}{tels que}
-\SetKw{Retourner}{retourner}
-\SetKwFunction{Ecrire}{écrire}
-
-\SetKwIF{Si}{SinonSi}{Sinon}{si}{alors}{sinon si}{sinon :}{fin si}
-\SetKwFor{Pour}{pour}{faire}{fin pour}
-\SetKwFor{Tantque}{tant que}{faire}{fin tant que}
-\SetKwRepeat{Faire}{faire}{tant que}
-\SetKwBlock{Repeter}{répéter}{fin}
-
-\SetKw{False}{false}
-\SetKw{True}{true}
-\SetKw{Faux}{faux}
-\SetKw{Vrai}{vrai}
-
-\SetKw{AllantDe}{allant de}
-\SetKw{KwA}{à}
-\SetKw{AvecPas}{avec un pas de}
-\SetKwIF{Variables}{DebutVariables}{Debut}{Variables}{}{b}{Debut}{Fin}
-
 
 \newcommand\KWStyle[1]{\textbf{\structure{#1}}}
 \SetKwSty{KWStyle}
 \newcommand\FuncStyle[1]{\texttt{#1}}
 \SetFuncSty{FuncStyle}
 
+\newcommand\Algos@setFrench{
+  \SetKwProg{Fun}{Fonction}{ :}{}
+  \SetKwProg{Proc}{Procédure}{ :}{}
+  \SetKwProg{Algo}{Algorithme}{ :}{}
+  \SetKwProg{Operation}{Opération}{ :}{}
+  \SetKwProg{Task}{Tâche de fond }{ :}{}
+  \SetKwProg{Variables}{variables}{ :}{}
+  \SetKwProg{LVariables}{variables locales}{ :}{}
+  \SetKwProg{SVariables}{variables partagées}{ :}{}
+
+  \SetKw{Let}{soit}
+  \SetKw{Lets}{soient}
+  \SetKw{St}{tel que}
+  \SetKw{Sts}{tels que}
+  \SetKw{Return}{retourner}
+
+  \SetKwIF{If}{ElseIf}{Else}{si}{ :}{sinon si}{sinon :}{}
+  \SetKwFor{For}{pour}{ :}{}
+  \SetKwFor{While}{tant que}{ :}{}
+  \SetKwRepeat{Do}{faire}{tant que}
+  \SetKwBlock{Repeat}{répéter :}{}
+  \SetKwProg{When}{quand}{ :}{}
+  \SetKw{Wait}{attendre que}
+
+  \SetKw{False}{faux}
+  \SetKw{True}{vrai}
+
+  \SetKw{Step}{avec un pas de}
+  \SetKw{From}{de}
+  \SetKw{To}{à}
+  \SetKw{By}{par}
+
+  \SetKwFunction{Print}{écrire}
+}
+
+\newcommand\Algos@setEnglish{
+  \SetKwProg{Fun}{Function}{:}{}
+  \SetKwProg{Proc}{Procedure}{:}{}
+  \SetKwProg{Algo}{Algorithm}{:}{}
+  \SetKwProg{Operation}{Operation}{:}{}
+  \SetKwProg{Task}{Background task}{:}{}
+ 
+  \SetKwProg{Variables}{variables}{:}{}
+  \SetKwProg{LVariables}{local variables}{:}{}
+  \SetKwProg{SVariables}{shared variables}{:}{}
+ 
+  \SetKw{Let}{let}
+  \SetKw{Lets}{let}
+  \SetKw{St}{such that}
+  \SetKw{Sts}{such that}
+  \SetKw{Return}{return}
+ 
+  \SetKwIF{If}{ElseIf}{Else}{if}{:}{else if}{else:}{}
+  \SetKwFor{For}{for}{:}{}
+  \SetKwFor{While}{while}{:}{}
+  \SetKwRepeat{Do}{do}{while}
+  \SetKwBlock{Repeat}{repeat}{}
+  \SetKwProg{When}{when}{:}{}
+  \SetKw{Wait}{wait until}
+ 
+  \SetKw{False}{false}
+  \SetKw{True}{true}
+ 
+  \SetKw{Step}{with step}
+  \SetKw{From}{from}
+  \SetKw{To}{to}
+  \SetKw{By}{by}
+ 
+  \SetKwFunction{Print}{print}
+}
+
+\ifAlgos@french\Algos@setFrench\else\Algos@setEnglish\fi
 
 
 % -------- Listings Configuration --------

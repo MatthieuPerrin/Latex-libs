@@ -45,7 +45,7 @@
 \define@key{tf@image@options}{height}{\renewcommand\tf@image@height{#1}}
 \define@key{tf@image@options}{width}{\renewcommand\tf@image@width{#1}}
 \define@key{tf@image@options}{title}{\renewcommand\tf@image@title{#1}}
-\define@key{tf@image@options}{license}{\renewcommand\tf@image@license{#1}}
+\define@key{tf@image@options}{license}{\renewcommand\tf@image@license{{}#1}}
 \define@key{tf@image@options}{img}{\renewcommand\tf@image@img{#1}}
 
 \newcommand<>\tf@draw[2]{%
@@ -99,7 +99,7 @@
       }}
     }%
     \tf@if@empty\tf@image@title{}{\\\structure{\tf@image@title}}%
-    \tf@if@empty\tf@image@license{}{\structure{\footnote{\tf@image@license}}}%
+    \tf@if@empty\tf@image@license{}{\structure{\footnote{{}\tf@image@license}}}%
   \end{tabular}%
   \endgroup%
 }
