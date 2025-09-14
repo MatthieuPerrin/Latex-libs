@@ -11,9 +11,13 @@
 \colorlet{exampleColor}{example}
 \colorlet{fadeColor}{black!30}
 
+\newcommand\ifhandout[2]{%
+  \@ifclasswith{beamer}{handout}{#1}{#2}%
+}
+
 \newcommand<>\nothing[1]{}
 \newcommand<>\altinverse[2]{#2}
-\@ifclasswith{beamer}{handout}{
+\ifhandout{
   \let\onlyb\nothing
   \let\uncoverb\nothing
   \let\uncoverb\nothing
