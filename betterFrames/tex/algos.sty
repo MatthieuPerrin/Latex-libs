@@ -19,11 +19,15 @@
 \SetKwSty{KWStyle}
 \newcommand\FuncStyle[1]{\texttt{#1}}
 \SetFuncSty{FuncStyle}
+\newcommand\CommentStyle[1]{\example{#1}}
+\SetCommentSty{CommentStyle}
 
 \newcommand\Algos@setFrench{
+  \SetKwProg{Algo}{Algorithme}{ :}{}
+  \SetKwProg{Interface}{Interface}{ :}{}
   \SetKwProg{Fun}{Fonction}{ :}{}
   \SetKwProg{Proc}{Procédure}{ :}{}
-  \SetKwProg{Algo}{Algorithme}{ :}{}
+  \SetKwProg{Command}{Commande}{ :}{}
   \SetKwProg{Operation}{Opération}{ :}{}
   \SetKwProg{Task}{Tâche de fond }{ :}{}
   \SetKwProg{Variables}{variables}{ :}{}
@@ -56,9 +60,11 @@
 }
 
 \newcommand\Algos@setEnglish{
+  \SetKwProg{Algo}{Algorithm}{:}{}
+  \SetKwProg{Interface}{Interface}{ :}{}
   \SetKwProg{Fun}{Function}{:}{}
   \SetKwProg{Proc}{Procedure}{:}{}
-  \SetKwProg{Algo}{Algorithm}{:}{}
+  \SetKwProg{Command}{Command}{ :}{}
   \SetKwProg{Operation}{Operation}{:}{}
   \SetKwProg{Task}{Background task}{:}{}
  
