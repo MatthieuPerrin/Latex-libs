@@ -8,9 +8,9 @@
 
 \RequirePackage{tikz}
 
-\newcommand\myRec{%
+\newcommand\myRec[1][]{%
   \begin{tikzpicture}%
-    \fill[rounded corners=2] (0,0) -- (0.0,0.3) -- (0.28,0.15) -- cycle;%
+    \fill[rounded corners=2,#1] (0,0) -- (0.0,0.3) -- (0.28,0.15) -- cycle;%
   \end{tikzpicture}%
 }
 
