@@ -1,0 +1,107 @@
+% SPDX-License-Identifier: CC-BY-SA-4.0
+% Author: Matthieu Perrin
+
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{distributed}[2025/09/24 Package for drawing distributed computing executions]
+
+\pgfdeclarelayer{process@background}
+\pgfdeclarelayer{process@foreground}
+
+\RequirePackage{algorithm2e}
+\SetKwFunction{SBroadcast}{synch-broadcast}
+\SetKwFunction{Broadcast}{broadcast}
+\SetKwFunction{Deliver}{deliver}
+\SetKw{Send}{send}
+\SetKw{Receive}{receive}
+\SetKw{Receives}{receives}
+
+\RequirePackage{tikz}
+\usetikzlibrary{patterns}
+\usetikzlibrary{arrows,shadows}
+\usetikzlibrary{calc}
+\usetikzlibrary{arrows.meta}
+\usetikzlibrary{decorations.markings}
+\usetikzlibrary{decorations.pathmorphing}
+\usetikzlibrary{decorations.pathreplacing}
+
+\tikzset{
+  operation/.style={
+    draw,
+    fill=white,
+    draw highlighted,
+    fill highlighted,
+    rectangle,
+    rounded corners,
+    anchor=center,
+    align=center,
+    inner xsep=3mm,
+    inner ysep=1mm,
+    outer sep=-1mm,
+    minimum height=4mm,
+  },
+  event/.style={
+    draw,
+    fill=white,
+    draw highlighted,
+    fill highlighted,
+    circle,
+    inner sep=1.5mm,
+    outer sep=-1mm,
+  },
+  message/.style={
+    {Circle[length=2.4pt,width=2.4pt]}-{Stealth[length=5pt]},
+    shorten <=-1.2pt,
+    auto,
+  },
+  lin point/.style={
+    {Circle[length=2pt,width=2pt]}-{Circle[length=2pt,width=2pt]},
+    shorten <=-1pt,
+    shorten >=-1pt,
+  },
+  every process/.style={
+    draw=none,
+    to path={
+      \pgfextra{
+        \begin{pgfonlayer}{process@background}
+          \draw (\tikztostart) -- (\tikztotarget);
+        \end{pgfonlayer}
+        \begin{pgfonlayer}{process@foreground}
+          \draw[thin, densely dotted] (\tikztostart) -- (\tikztotarget);
+        \end{pgfonlayer}
+      }
+      (\tikztostart) -- (\tikztotarget) \tikztonodes
+    }
+  },
+  process/.style={
+    Bar-Straight Barb,
+    every process,
+  },
+  crashed/.style={
+    Bar-Rays,
+    every process,
+  },
+  replica/.style={
+    font=\footnotesize,
+    above right,
+  },
+  replica below/.style={
+    replica,
+    below right,
+  },
+  bend below/.style={
+    out=-60,
+    in=120,
+    distance=#1,
+  },
+  bend above/.style={
+    out=60,
+    in=-120,
+    distance=#1,
+  },
+  bend above/.default=25,
+  bend below/.default=25,
+  bend left/.default=25,
+  bend right/.default=25,
+}
+
+\endinput

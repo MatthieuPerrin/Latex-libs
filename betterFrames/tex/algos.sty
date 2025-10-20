@@ -13,7 +13,8 @@
 
 
 % -------- Algorithm2e Configuration --------
-\RequirePackage[vlined]{algorithm2e}
+\RequirePackage{algorithm2e}
+\DontPrintSemicolon
 
 \newcommand\KWStyle[1]{\textbf{\structure{#1}}}
 \SetKwSty{KWStyle}
@@ -120,8 +121,6 @@
   numbers=none,
   numberstyle=\scriptsize,
   morekeywords={specification, var}
-%  moredelim=**[is][\color{structure.fg}]{@}{@}
 }
-
 
 \endinput

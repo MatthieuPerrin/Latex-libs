@@ -1,0 +1,238 @@
+% SPDX-License-Identifier: CC-BY-SA-4.0
+% Author: Matthieu Perrin
+
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{chat}[2025/09/24 Package for chat messaging services]
+
+\RequirePackage{marvosym}
+
+\RequirePackage{tikz}
+\usetikzlibrary{patterns}
+\usetikzlibrary{arrows,shadows}
+\usetikzlibrary{calc}
+
+\newcommand\chat@width{3cm}
+\newcommand\chat@height{3.5cm}
+\newcommand\chat@header@height{4mm}
+\newcommand\chat@message@distance{1.7mm}
+
+\colorlet{chat@color}{black!75}
+
+\define@key{chat@options}{width}{\edef\chat@width{#1}}
+\define@key{chat@options}{height}{\edef\chat@height{#1}}
+\define@key{chat@options}{header height}{\edef\chat@header@height{#1}}
+\define@key{chat@options}{message distance}{\edef\chat@message@distance{#1}}
+\define@key{chat@options}{color}{\colorlet{chat@color}{#1}}
+
+\pgfdeclarelayer{chat@bubble}
+\pgfsetlayers{background,chat@bubble,main}
+
+\tikzset{
+  chat background/.style={
+    preaction={fill, black!15},
+    pattern=crosshatch dots,
+    pattern color=black!18,
+    outer sep=0pt,
+    inner sep=0pt,
+  },
+  chat header/.style={
+    fill=chat@color,
+    drop shadow={opacity=.25,shadow yshift=-0.03,shadow xshift=0,color=black},
+    text width=\chat@width,
+    text height=\chat@header@height,
+    outer sep=0pt,
+    inner sep=0pt,
+  },
+  every chat text/.style={
+    align=left,
+    text width=.7*\chat@width,
+    inner sep=0pt,
+    outer sep=2.5pt,
+    font=\scriptsize,
+  },
+  chat text send/.style={
+    every chat text,
+    anchor=north east,
+  },
+  chat text recv/.style={
+    every chat text,
+    anchor=north west,
+  },
+  chat text bubble/.style={
+    align=center,
+    text width=3cm,
+    text width=\chat@width,
+    minimum height=\chat@height,
+    inner sep=0pt,
+    outer sep=2.5pt,
+  },
+  chat text prompt/.style={
+    black!50,
+  },
+  every chat bubble/.style={
+    rounded corners=2.5,
+    outer sep=5pt,
+    ultra thin,
+    drop shadow={opacity=.15,shadow xshift=0.03,shadow yshift=-0.04,color=black},
+  },
+  chat bubble send/.style={
+    every chat bubble,
+    draw=chat@color,
+    top color=chat@color!20,
+    bottom color=chat@color!40,
+  },
+  chat bubble err/.style={
+    every chat bubble,
+    draw=chat@color,
+    top color=chat@color!10,
+    bottom color=chat@color!20,
+  },
+  chat bubble recv/.style={
+    every chat bubble,
+    draw=chat@color,
+    top color=chat@color!20,
+    bottom color=chat@color!40,
+  },
+  chat bubble prompt/.style={
+    every chat bubble,
+    draw=black!50,
+    fill=white,
+  },
+  chat bubble bubble/.style={
+    every chat bubble,
+    draw=chat@color,
+    top color=chat@color!20,
+    bottom color=chat@color!40,
+  },
+}
+
+\newenvironment{chat}[2][]{
+  \begingroup
+  \setkeys{chat@options}{#1}
+  \begin{tikzpicture}
+    \node[chat header, anchor=north] (chat@header) {};
+    \draw[white, thick] (chat@header.west) ++ (2mm,0)  +(.5mm,.35*\chat@header@height) --             +(0,0) --             +(.5mm,-.35*\chat@header@height);
+    \fill[white]        (chat@header.east) ++ (-2mm,0) +(0   ,.25*\chat@header@height) circle (.25mm) +(0,0) circle (.25mm) +(0   ,-.25*\chat@header@height) circle (.25mm);
+    \node[white]     at (chat@header) {#2};
+    \coordinate (chat@current) at (chat@header.south);
+}{
+  \coordinate (chat@current) at ($(chat@current)+(0,-6mm)$);
+  \begin{scope}[background]
+    \node[chat background, fit=(chat@header)(chat@current), anchor=north, minimum height=\chat@height] (chat@chat) at (chat@header.north) {};
+  \end{scope}
+  \node[draw, very thin, fit=(chat@chat), inner sep=0pt] {};
+  \draw[chat bubble prompt] 
+  (   $(chat@chat.south east)+(-1mm,4mm)$) 
+  -- ($(chat@chat.south west)+( 1mm,4mm)$) 
+  -- ($(chat@chat.south west)+( 1mm,1mm)$) 
+  -- ($(chat@chat.south east)+(-2mm,1mm)$) 
+  -- ($(chat@chat.south east)+(-2mm,4mm)$) 
+  -- ($(chat@chat.south east)+(-1mm,4mm)$) 
+  ;
+  \node[chat text prompt] at ($(chat@chat.south)+(0,2.5mm)$) {\scriptsize Entrez votre message};
+  \node[chat text prompt] at ($(chat@chat.south west)+(2.5mm,2.5mm)$) {\footnotesize \Smiley{}};
+  \end{tikzpicture}
+  \endgroup
+}
+
+\newcommand\chatSend[2][]{
+  \begingroup
+  \setkeys{chat@options}{#1}
+  \node[chat text send] (chat@text) at ($(chat@current-|chat@header.east)+(-2mm,-\chat@message@distance)$) {#2};
+  \begin{pgfonlayer}{chat@bubble}
+    \shade[chat bubble send] 
+    (   $(chat@text.north east)+(1mm,0)$) 
+    --   (chat@text.north west)
+    --   (chat@text.south west)
+    --   (chat@text.south east)
+    -- ($(chat@text.north east)+(0,0mm)$) 
+    -- ($(chat@text.north east)+(1mm,0)$) 
+    ;
+  \end{pgfonlayer}
+  \coordinate (chat@current) at (chat@text.south);
+  \endgroup
+}
+
+\newcommand\chatErr[2][]{
+  \begingroup
+  \setkeys{chat@options}{#1}
+  \node[chat text send] (chat@text) at ($(chat@current-|chat@header.east)+(-2mm,-\chat@message@distance)$) {\example{#2}\\\hfill{\fontsize{3.5}{3.5}\selectfont Le message n'a pas été envoyé...}};
+  \begin{pgfonlayer}{chat@bubble}
+    \shade[chat bubble err] 
+    (   $(chat@text.north east)+(1mm,0)$) 
+    --   (chat@text.north west)
+    --   (chat@text.south west)
+    --   (chat@text.south east)
+    -- ($(chat@text.north east)+(0,0mm)$) 
+    -- ($(chat@text.north east)+(1mm,0)$) 
+    ;
+  \end{pgfonlayer}
+  \coordinate (chat@current) at (chat@text.south);
+  \endgroup
+}
+
+\newcommand\chatRecv[2][]{
+  \begingroup
+  \setkeys{chat@options}{#1}
+  \node[chat text recv] (chat@text) at ($(chat@current-|chat@header.west)+(2mm,-\chat@message@distance)$) {#2};
+  \begin{pgfonlayer}{chat@bubble}
+    \shade[chat bubble recv] 
+    (   $(chat@text.north west)+(-1mm,0)$) 
+    --   (chat@text.north east)
+    --   (chat@text.south east)
+    --   (chat@text.south west)
+    -- ($(chat@text.north west)+(0,0)$) 
+    -- ($(chat@text.north west)+(-1mm,0)$) 
+    ;
+  \end{pgfonlayer}
+  \coordinate (chat@current) at (chat@text.south);
+  \endgroup
+}
+
+\newcommand\chatBubble[2][]{
+  \begingroup
+  \setkeys{chat@options}{width=3cm, height=1cm, #1}
+  \begin{tikzpicture}
+    \node[chat text bubble] (chat@text) {#2};
+    \begin{pgfonlayer}{chat@bubble}
+      \shade[chat bubble bubble] 
+      (   $(chat@text.south)+(0,-2mm)$) 
+      -- ($(chat@text.south)+(2mm,0)$) 
+      --   (chat@text.south east)
+      --   (chat@text.north east)
+      --   (chat@text.north west)
+      --   (chat@text.south west)
+      -- ($(chat@text.south)+(-2mm,0)$) 
+      -- ($(chat@text.south)+(0,-2mm)$) 
+      ;
+    \end{pgfonlayer}
+  \end{tikzpicture}
+  \endgroup
+}
+
+
+\tikzset{
+  faded background picture/.style={
+    inner sep=0pt,
+    outer sep=0pt,
+    text height=8cm,
+    append after command={
+      \pgfextra{
+        \begin{scope}
+          \clip (\tikzlastnode.north west) rectangle (\tikzlastnode.south east);
+          \path let \p1 = (\tikzlastnode.north), \p2 = (\tikzlastnode.south) in 
+          node[anchor=south, inner sep=0pt, outer sep=0pt] at (\tikzlastnode.south) {\includegraphics[height=\dimexpr\y1-\y2\relax]{#1}};
+          \fill[white, path fading=south] (\tikzlastnode.north west) rectangle (\tikzlastnode.south east) ;
+          \fill[white, opacity=.5]        (\tikzlastnode.north west) rectangle (\tikzlastnode.south east) ;
+          \draw (\tikzlastnode.north west) -- (\tikzlastnode.south west);
+          \draw (\tikzlastnode.north east) -- (\tikzlastnode.south east);
+          \fill[white, path fading=south] (\tikzlastnode.north west) rectangle (\tikzlastnode.east);
+        \end{scope}
+        \draw[white, ultra thick] (\tikzlastnode.north west) -- (\tikzlastnode.north east);
+      }
+    },
+  },
+}
+
+
+\endinput
