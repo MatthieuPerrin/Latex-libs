@@ -196,22 +196,35 @@
   \draw[structure]  (.05,.05) -- (.16,.05);
 \end{tikzpicture}}}
 
+\newcommand\footnoteref[2][\file]{
+  \begingroup
+    \let\beamer@orig@footnotetemplate\beamer@footnotetemplate
+    \setbeamertemplate{footnote}{%
+      \leavevmode
+      \hbox{}%
+      #1\hspace{0.5em}%
+      \insertfootnotetext\par
+    }%
+    \footnotetext{#2}%
+    \let\beamer@footnotetemplate\beamer@orig@footnotetemplate
+  \endgroup
+}
+
+\newcommand\footnoterefjava[1]{\footnoteref[\jfile]{#1}}
+\newcommand\footnoterefcpp[1]{\footnoteref[\cfile]{#1}}
+
+
+
 \newcommand{\citem}{}
 \newcommand{\jitem}{}
 
-\newenvironment{citing}
-               {\minipage{\textwidth}\itemize \scriptsize \let\origitem\item
-                 \renewcommand{\item}[1][]
-                              {\origitem[\file] \structure{##1}}\scriptsize
-                 \renewcommand{\jitem}[1][]
-                              {\origitem[\jfile] \structure{##1}}\scriptsize
-                 \renewcommand{\citem}[1][]
-                              {\origitem[\cfile] \structure{##1}}\scriptsize}
+\newenvironment{citing}{\minipage{\textwidth}\itemize \scriptsize \let\origitem\item
+  \renewcommand{\item}[1][]
+               {\origitem[\file] \structure{##1}}\scriptsize
+               \renewcommand{\jitem}[1][]
+                            {\origitem[\jfile] \structure{##1}}\scriptsize
+                            \renewcommand{\citem}[1][]
+                                         {\origitem[\cfile] \structure{##1}}\scriptsize}
                {\enditemize\endminipage}
-
-
-
-
-               
 
 \endinput

@@ -28,7 +28,10 @@
 \newcommand\tf@image@height{}
 \newcommand\tf@image@width{}
 \newcommand\tf@image@title{}
+\newcommand\tf@image@license@footnotemacro{\footnotetext}
+\newcommand\tf@image@license@footnotemark{}
 \newcommand\tf@image@license{}
+\newcommand\tf@image@licenselogo{}
 \newcommand\tf@image@img{}
 
 \define@key{tf@node@options}{x}{\renewcommand\tf@node@x{#1}}
@@ -47,7 +50,9 @@
 \define@key{tf@image@options}{height}{\renewcommand\tf@image@height{#1}}
 \define@key{tf@image@options}{width}{\renewcommand\tf@image@width{#1}}
 \define@key{tf@image@options}{title}{\renewcommand\tf@image@title{#1}}
-\define@key{tf@image@options}{license}{\renewcommand\tf@image@license{{}#1}}
+\define@key{tf@image@options}{license}{\renewcommand\tf@image@license{#1}\let\tf@image@license@footnotemacro\footnotetext}
+\define@key{tf@image@options}{license*}{\renewcommand\tf@image@license{#1}\let\tf@image@license@footnotemacro\footnote\renewcommand\tf@image@license@footnotemark{~\insertfootnotemark}}
+\define@key{tf@image@options}{licenselogo}{\renewcommand\tf@image@licenselogo{#1}}
 \define@key{tf@image@options}{img}{\renewcommand\tf@image@img{#1}}
 
 \newcommand<>\tf@draw[2]{%
@@ -101,7 +106,15 @@
       }}
     }%
     \tf@if@empty\tf@image@title{}{\\\structure{\tf@image@title}}%
-    \tf@if@empty\tf@image@license{}{\structure{\footnote{{}\tf@image@license}}}%
+    \let\beamer@orig@footnotetemplate\beamer@footnotetemplate
+    \setbeamertemplate{footnote}{%
+      \leavevmode
+      \hbox{}%
+      \structure{\tf@image@licenselogo}\hspace{0.5em}\tf@image@license@footnotemark%
+      \insertfootnotetext\par
+    }%
+    \tf@image@license@footnotemacro{\tf@image@license}%
+    \let\beamer@footnotetemplate\beamer@orig@footnotetemplate
   \end{tabular}%
   \endgroup%
 }
