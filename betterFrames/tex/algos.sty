@@ -11,16 +11,48 @@
 \newcommand\AlgoFrench{\Algos@frenchtrue\Algos@setFrench}
 \newcommand\AlgoEnglish{\Algos@frenchfalse\Algos@setEnglish}
 
+\RequirePackage{xcolor}
+\@ifundefinedcolor{structure}{\colorlet{structure}{black}}{}
+\@ifundefinedcolor{alert}{\colorlet{alert}{black!50!red}}{}
+\@ifundefinedcolor{example}{\colorlet{example}{teal}}{}
+
+\newcommand\ToggleKWStyle{\bfseries\color{structure}}
+\newcommand\ToggleFuncStyle{\tt}
+\newcommand\ToggleCommentStyle{\color{example}}
+\newcommand\ToggleStringStyle{\color{alert}}
+
+\newcommand\KWStyle[1]{{\KWStyleToggle #1}}
+\newcommand\FuncStyle[1]{{\ToggleFuncStyle #1}}
+\newcommand\CommentStyle[1]{{\ToggleCommentStyle #1}}
+
+
+
+% -------- Listings Configuration --------
+
+\RequirePackage{listings}
+\lstset{
+  language=java,
+  basicstyle=\footnotesize\ttfamily,
+  keywordstyle=\ToggleKWStyle,
+  stringstyle=\ToggleStringStyle,
+  commentstyle=\ToggleCommentStyle,
+  showstringspaces=false,
+  numbers=none,
+  numberstyle=\scriptsize,
+  morekeywords={
+    specification,
+    var
+  }
+}
+
+
 
 % -------- Algorithm2e Configuration --------
 \RequirePackage{algorithm2e}
 \DontPrintSemicolon
 
-\newcommand\KWStyle[1]{\textbf{\structure{#1}}}
 \SetKwSty{KWStyle}
-\newcommand\FuncStyle[1]{\texttt{#1}}
 \SetFuncSty{FuncStyle}
-\newcommand\CommentStyle[1]{\example{#1}}
 \SetCommentSty{CommentStyle}
 
 \newcommand\Algos@setFrench{
@@ -33,7 +65,6 @@
   \SetKwProg{Event}{événement}{ :}{}
   \SetKwProg{Operation}{opération}{ :}{}
   \SetKwProg{Method}{méthode}{ :}{}
-  \SetKwProg{VMethod}{\alert{v méthode}}{ :}{}
   \SetKwProg{Task}{tâche de fond }{ :}{}
   \SetKwProg{Variables}{variables}{ :}{}
   \SetKwProg{LVariables}{variables locales}{ :}{}
@@ -106,21 +137,5 @@
 }
 
 \ifAlgos@french\Algos@setFrench\else\Algos@setEnglish\fi
-
-
-% -------- Listings Configuration --------
-
-\RequirePackage{listings}
-\lstset{
-  language=c++,
-  basicstyle=\footnotesize\ttfamily,
-  keywordstyle=\bfseries\color{alert},
-  stringstyle=\bfseries\color{example},
-  commentstyle=\color{structure.fg},
-  showstringspaces=false,
-  numbers=none,
-  numberstyle=\scriptsize,
-  morekeywords={specification, var}
-}
 
 \endinput

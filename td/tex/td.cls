@@ -45,6 +45,18 @@
 
 
 \gdef\text@forbidden{@ @@ @'}
+\newcommand\ex@maybeparen[1]{%
+  \begingroup
+    \edef\ex@tmp{\detokenize{#1}}%
+    \ifx\ex@tmp\@empty
+      % rien
+    \else
+      ~(\unexpanded{#1})%
+    \fi
+  \endgroup
+}
+
+
 
 \definecolor{charcoal}{RGB}{28,28,28}
 \newcounter{tdcls@exercice}
@@ -129,9 +141,15 @@
 }
 
 \newcommand\insertintituleUE{}
-\newcommand{\intituleUE}[1]{
-  \gdef\insertintituleUE{#1}
-}
+\newcommand\runningintituleUE{}
+\newcommand\intituleUE[2][\text@forbidden]{%
+  \gdef\insertintituleUE{#2}%
+  \ifthenelse{\equal{#1}{\text@forbidden}}{
+    \gdef\runningintituleUE{#2}
+  }{
+    \gdef\runningintituleUE{#1}
+  }%
+}%
 
 \newcommand\insertsession{}
 \newcommand\runningsession{}
@@ -173,17 +191,17 @@
   }
 }
 
-\newenvironment{exercice}[1][\text@forbidden]{%
-  \ifcorrection{
+\newenvironment{exercice}[1][]{%
+  \ifcorrection{%
     \clearpage
     \tdcls@print@top
-  }
+  }{}%
   \needspace{3\baselineskip}%
   \par\addvspace{5mm}%
   \refstepcounter{tdcls@exercice}%
-  \noindent\textbf{Exercice \insertexercisenumber\ifthenelse{\equal{#1}{\text@forbidden}}{}{~(#1)}.}\par\vspace{2mm}%
+  \noindent\textbf{Exercice \insertexercisenumber\ex@maybeparen{#1}.}%
+  \par\vspace{2mm}%
 }{\par\vspace{1mm}}
-
 
 %Environnement question
 
@@ -303,7 +321,7 @@
   \fancyfoot[LE]{{\small \thepage/\pageref{LastPage}}}
   \fancyfoot[CE]{}
   \fancyfoot[RE]{{\small \insertcodeUE}}
-  \fancyfoot[OL]{{\small \insertintituleUE}}
+  \fancyfoot[OL]{{\small \runningintituleUE}}
   \fancyfoot[OC]{}
   \fancyfoot[OR]{{\small \thepage/\pageref{LastPage}}}
 }{
