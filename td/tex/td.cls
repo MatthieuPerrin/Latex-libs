@@ -87,6 +87,7 @@
   }%
 }%
 
+\newcommand\insertnumberfeuille{}
 \newcommand\inserttypefeuille{}
 \newcommand\runningtypefeuille{}
 \newcommand\typefeuille[2][\text@forbidden]{
@@ -97,11 +98,11 @@
     \gdef\runningtypefeuille{#1}
   }
 }
-\newcommand\typeTD{\typefeuille[TD]{travaux dirigés}}
-\newcommand\typeTP{\typefeuille[TP]{travaux pratiques}}
-\newcommand\typeCC{\typefeuille[CC]{contrôle continu}}
-\newcommand\typeCCTP{\typefeuille[CCTP]{contrôle continu de TP}}
-\newcommand\typeEXAM{\typefeuille{Examen}}
+\newcommand\typeTD[1][]{\typefeuille[TD]{travaux dirigés}\gdef\insertnumberfeuille{~n° #1}}
+\newcommand\typeTP[1][]{\typefeuille[TP]{travaux pratiques}\gdef\insertnumberfeuille{~n° #1}}
+\newcommand\typeCC[1][]{\typefeuille[CC]{contrôle continu}\gdef\insertnumberfeuille{~n° #1}}
+\newcommand\typeCCTP[1][]{\typefeuille[CCTP]{contrôle continu de TP}\gdef\insertnumberfeuille{~n° #1}}
+\newcommand\typeEXAM[1][]{\typefeuille{Examen}\gdef\insertnumberfeuille{~n° #1}}
 
 \newcommand\insertdate{
   \ifnum\number\month<8{
@@ -287,12 +288,12 @@
   \begingroup%
   \newpage%
   \large%
-  \par\parindent0pt\insertcursus                       \hfill \insertinstitution%
-  \par\parindent0pt\insertcodeUE~---~\insertintituleUE \hfill \insertdate%
+  \par\parindent0pt\insertcodeUE~--~\insertintituleUE \hfill \insertinstitution%
+  \par\parindent0pt\insertcursus     \hfill \insertdate%
   \vskip 2em%
   \begin{center}%
     \LARGE
-    \emph{Feuille de \inserttypefeuille~n° \thetdcls@session}
+    \emph{Feuille de \inserttypefeuille\insertnumberfeuille}
     \par%
     \vspace{3mm}%
     \Large
@@ -303,9 +304,6 @@
   \par\vskip 1.5em
   \endgroup
 }
-
-
-
 
 
 
@@ -327,7 +325,7 @@
 }{
   \fancyfoot[L]{{\footnotesize \insertcodeUE~--~\runningintituleUE}}
   \fancyfoot[C]{{\footnotesize \thepage/\pageref{LastPage}}}
-  \fancyfoot[R]{{\footnotesize \runningtitle}}
+  \fancyfoot[R]{{\footnotesize \runningtypefeuille\insertnumberfeuille~--~\runningtitle}}
 }
 \renewcommand{\footrulewidth}{.4pt}
 \renewcommand{\headrulewidth}{0pt}
