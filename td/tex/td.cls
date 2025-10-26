@@ -325,9 +325,9 @@
   \fancyfoot[OC]{}
   \fancyfoot[OR]{{\small \thepage/\pageref{LastPage}}}
 }{
-  \fancyfoot[L]{{\scriptsize\@intitule\ -- \insertinstitution}}
-  \fancyfoot[C]{\scriptsize\Type@Feuille \@feuille\ -- \runningtitle}
-  \fancyfoot[R]{{\scriptsize\thepage/\pageref{LastPage}}}
+  \fancyfoot[L]{{\footnotesize \insertcodeUE~--~\runningintituleUE}}
+  \fancyfoot[C]{{\footnotesize \thepage/\pageref{LastPage}}}
+  \fancyfoot[R]{{\footnotesize \runningtitle}}
 }
 \renewcommand{\footrulewidth}{.4pt}
 \renewcommand{\headrulewidth}{0pt}
