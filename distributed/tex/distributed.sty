@@ -4,9 +4,6 @@
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesPackage{distributed}[2025/09/24 Package for drawing distributed computing executions]
 
-\pgfdeclarelayer{process@background}
-\pgfdeclarelayer{process@foreground}
-
 \RequirePackage{algorithm2e}
 \SetKwFunction{SBroadcast}{synch-broadcast}
 \SetKwFunction{Broadcast}{broadcast}
@@ -23,6 +20,23 @@
 \usetikzlibrary{decorations.markings}
 \usetikzlibrary{decorations.pathmorphing}
 \usetikzlibrary{decorations.pathreplacing}
+
+\pgfdeclarelayer{process@background}
+\pgfdeclarelayer{process@foreground}
+\pgfsetlayers{process@background, main, process@foreground}
+
+
+\pgfkeysifdefined{/tikz/draw highlighted}{}{%
+  \tikzset{%
+    draw highlighted/.style={},%
+  }%
+}
+\pgfkeysifdefined{/tikz/fill highlighted}{}{%
+  \tikzset{%
+    fill highlighted/.style={},%
+  }%
+}
+
 
 \tikzset{
   operation/.style={
