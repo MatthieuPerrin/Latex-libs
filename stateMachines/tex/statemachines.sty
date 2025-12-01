@@ -2,7 +2,7 @@
 % Author: Matthieu Perrin
 
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{statemachines}[2025/06/08 Package for automata, puchdown automata and turing machines]
+\ProvidesPackage{statemachines}[2025/06/08 Package for automata, pushdown automata and turing machines]
 
 \RequirePackage{xcolor}
 \RequirePackage{keyval}
@@ -10,10 +10,16 @@
 \RequirePackage{xparse}
 \RequirePackage{grid}
 \RequirePackage{2Darray}
+
 \RequirePackage{tikz}
 \usetikzlibrary{automata}
-\usetikzlibrary{overlay-beamer-styles}
- 
+%\usetikzlibrary{overlay-beamer-styles}
+\usetikzlibrary{positioning}
+
+
+
+
+
 \tikzset{
   fill highlighted/.style={},
   text highlighted/.style={},
