@@ -24,9 +24,9 @@
 \ProcessOptions\relax
 
 \ifelse@tdcls@livret{
-  \LoadClass[twoside,\tdcls@passedoptions]{book}%
+  \LoadClass[twoside,a4paper,\tdcls@passedoptions]{book}%
 }{
-  \LoadClass[\tdcls@passedoptions]{article}%
+  \LoadClass[a4paper,\tdcls@passedoptions]{article}%
 }
 
 \RequirePackage{times}
@@ -61,6 +61,16 @@
 \definecolor{charcoal}{RGB}{28,28,28}
 \newcounter{tdcls@exercice}
 \newcounter{tdcls@session}
+
+
+
+\AtBeginDocument{%
+  \@ifpackageloaded{hyperref}{%
+    \providecommand*{\theHtdcls@session}{\arabic{tdcls@session}}%
+    \providecommand*{\theHtdcls@exercice}{\theHtdcls@session.\arabic{tdcls@exercice}}%
+  }{}%
+}
+
 \newcommand\insertexercisenumber{\thetdcls@exercice}
 \if@tdcls@livret\gdef\insertexercisenumber{\thetdcls@session.\thetdcls@exercice} \fi
 
@@ -330,6 +340,46 @@
 \renewcommand{\footrulewidth}{.4pt}
 \renewcommand{\headrulewidth}{0pt}
 \renewcommand{\headwidth}{\hsize}
+
+
+
+
+
+
+
+
+
+\newcommand\td@exercise@path{}
+\newcommand\td@correction@path{}
+
+\newcommand\td@correction@missing{%
+  \begin{correction}%
+    Correction manquante%
+  \end{correction}%
+}
+
+\newcommand\inputexercisepath[2][]{
+  \renewcommand\td@correction@path{#1}
+  \renewcommand\td@exercise@path{#2}
+}
+
+
+\newcommand\inputexercise[1]{%
+  \input{\td@exercise@path/#1}%
+  \ifcorrection{%
+    \IfFileExists{\td@correction@path/#1.tex}{%
+      \input{\td@correction@path/#1}%
+    }{%
+      \td@correction@missing%
+    }%
+  }%
+}
+
+
+
+
+
+
 
 \endinput
 
