@@ -175,21 +175,27 @@
   \stepcounter{tdcls@session}%
   \setcounter{tdcls@exercice}{0}%
 }%
-\newcommand\tdcls@print@top{
+\newcommand\tdcls@print@top{%
   \begin{center}%
     \begin{tikzpicture}%
-      \node[align=center, text width=\textwidth, minimum height=7mm, font=\Large] (number) {Séance \thetdcls@session\if@tdcls@appendix~---~pour aller plus loin\fi};
-      \node[align=center, text width=\textwidth, anchor=north, minimum height=8mm, font=\LARGE] (title) at (number.south) {\insertsession};
+      \node[align=center, text width=\textwidth, minimum height=7mm, font=\Large, inner sep=0pt, outer sep=0pt] (number) {%
+        Séance \thetdcls@session\if@tdcls@appendix~---~pour aller plus loin\fi%
+      };
+      \node[align=center, text width=\textwidth, anchor=north, minimum height=8mm, font=\LARGE, inner sep=0pt, outer sep=0pt] (title) at (number.south) {%
+        \insertsession%
+      };
       \draw ([xshift=-4cm, yshift=-2mm]title.south) -- ([xshift=4cm, yshift=-2mm]title.south);
     \end{tikzpicture}%
   \end{center}%
 }
 \newcommand\tdcls@print@session[2][\text@forbidden]{%
   \clearpage\ifodd\value{page}~\newpage\fi%
-  \tdcls@set@session[#1]{#2}
-  \tdcls@print@top
+  \tdcls@set@session[#1]{#2}%
+  \tdcls@print@top%
 }%
-\newcommand\session[2][\text@forbidden]{\tdcls@set@session[#1]{#2}}
+\newcommand\session[2][\text@forbidden]{%
+  \tdcls@set@session[#1]{#2}%
+}
 \AtBeginDocument{\ifnotcorrection{\let\session\tdcls@print@session}}
 
 \newif\if@tdcls@appendix
