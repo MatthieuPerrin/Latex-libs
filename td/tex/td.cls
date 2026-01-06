@@ -199,13 +199,24 @@
   \end{center}%
 }
 \newcommand\tdcls@print@session[2][\text@forbidden]{%
-  \clearpage\ifodd\value{page}~\newpage\fi%
+  \clearpage\tdcls@clear@session%
   \tdcls@set@session[#1]{#2}%
   \tdcls@print@top%
 }%
 \newcommand\session[2][\text@forbidden]{%
   \tdcls@set@session[#1]{#2}%
 }
+
+\newcommand\tdcls@clear@session{}
+
+\newcommand\cleardoublepageatbeginsession{%
+  \renewcommand\tdcls@clear@session{\ifodd\value{page}~\newpage\fi}%
+}
+\newcommand\noeardoublepageatbeginsession{%
+  \renewcommand\tdcls@clear@session{}%
+}
+
+
 \AtBeginDocument{\ifnotcorrection{\let\session\tdcls@print@session}}
 
 \newif\if@tdcls@appendix
@@ -256,12 +267,12 @@
     innerbottommargin=10pt
   ]{graybox}
   \newenvironment{correction}{%
-    \needspace{5\baselineskip}%
+%    \needspace{5\baselineskip}%
     \begin{graybox}%
-      \noindent\textbf{Correction}\par\vspace{2mm}%
+%      \noindent\textbf{Correction.~} %\par\vspace{2mm}%
   }{
     \end{graybox}
-    \par\vspace{1mm}
+%    \par\vspace{1mm}
   }
 }{
   \newsavebox{\ignorebox}
