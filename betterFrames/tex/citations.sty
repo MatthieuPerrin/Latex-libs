@@ -17,7 +17,7 @@
 \newcommand\quote@style@quote[1]{\fontfamily{LinuxLibertineT-LF}\fontsize{40}{0}\selectfont#1}
 \newcommand\quote@style@name[1]{#1}
 \newcommand\quote@style@text[1]{\textit{#1}}
-\newcommand\quote@style@width{.85\textwidth}
+\newcommand\quote@style@width{.9\textwidth}
 
 \newcommand\myquote[3][structure]{%
   \begin{tikzpicture}
@@ -27,11 +27,6 @@
     \node[#1, above right=-6.5mm and 0mm of quote@text.south east, anchor=south west] {\quote@style@quote{''}};
   \end{tikzpicture}
 }
-
-
-
-
-
 
 \newcommand*{\openquote}
    {\tikz[remember picture,overlay,xshift=-4ex,yshift=-1ex]
