@@ -288,7 +288,7 @@
   \newpage  
   \newgeometry{top=2.5cm,bottom=2.5cm,left=2cm,right=2cm}
   \thispagestyle{empty}
-  \begin{titlepage}
+%  \begin{titlepage}
     \begin{minipage}{.4\textwidth}
       \centering
       \insertlogo
@@ -315,7 +315,8 @@
     \begin{minipage}{.5\textwidth}
       \textbf{\color{charcoal!70}\insertauthor}
     \end{minipage}
-  \end{titlepage}
+    \addtocounter{page}{-1}
+%  \end{titlepage}
   \restoregeometry
   \newpage  
 }
