@@ -231,8 +231,10 @@
 
 \newenvironment{exercice}[1][]{%
   \ifcorrection{%
-    \clearpage
-    \tdcls@print@top
+    \if@tdcls@livret{
+      \clearpage
+      \tdcls@print@top
+    }\fi
   }{}%
   \needspace{3\baselineskip}%
   \par\addvspace{5mm}%
