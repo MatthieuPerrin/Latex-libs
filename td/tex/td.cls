@@ -84,6 +84,16 @@
 \newcommand\insertexercisenumber{\thetdcls@exercice}
 \if@tdcls@livret\gdef\insertexercisenumber{\thetdcls@session.\thetdcls@exercice} \fi
 
+\renewenvironment{abstract}{%
+  \vspace{-5mm}
+  \begin{center}
+    \begin{minipage}{.9\textwidth}
+      \it
+}{
+    \end{minipage}
+  \end{center}
+}
+
 
 \newcommand\inserttitle{}
 \newcommand\runningtitle{}
@@ -118,11 +128,37 @@
     \gdef\runningtypefeuille{#1}
   }
 }
-\newcommand\typeTD[1][]{\typefeuille[TD]{travaux dirigés}\gdef\insertnumberfeuille{~n° #1}}
-\newcommand\typeTP[1][]{\typefeuille[TP]{travaux pratiques}\gdef\insertnumberfeuille{~n° #1}}
-\newcommand\typeCC[1][]{\typefeuille[CC]{contrôle continu}\gdef\insertnumberfeuille{~n° #1}}
-\newcommand\typeCCTP[1][]{\typefeuille[CCTP]{contrôle continu de TP}\gdef\insertnumberfeuille{~n° #1}}
-\newcommand\typeEXAM[1][]{\typefeuille{Examen}\gdef\insertnumberfeuille{~n° #1}}
+\newcommand\td@numerofeuille[1][\text@forbidden]{%
+  \ifthenelse{\equal{#1}{\text@forbidden}}{%
+    \gdef\insertnumberfeuille{}%
+  }{%
+    \gdef\insertnumberfeuille{~n° #1}%
+  }%
+}%
+
+\newcommand\typeTD[1][\text@forbidden]{%
+  \typefeuille[TD]{Feuille de travaux dirigés}%
+  \td@numerofeuille[#1]%
+}
+\newcommand\typeTP[1][\text@forbidden]{%
+  \typefeuille[TP]{Feuille de travaux pratiques}%
+  \td@numerofeuille[#1]%
+}
+\newcommand\typeCC[1][\text@forbidden]{%
+  \typefeuille{Contrôle continu}%
+  \td@numerofeuille[#1]%
+  \fancyhead[L]{\textbf{Nom :}  \hspace{3cm} \textbf{Prénom :}  \hspace{3cm} \textbf{Numéro d'étudiant :} \hspace{2cm} \textbf{Groupe :}}%
+}
+\newcommand\typeCCTP[1][\text@forbidden]{%
+  \typefeuille[CCTP]{Contrôle continu de TP}%
+  \td@numerofeuille[#1]%
+  \fancyhead[L]{\textbf{Nom :}  \hspace{3cm} \textbf{Prénom :}  \hspace{3cm} \textbf{Numéro d'étudiant :} \hspace{2cm} \textbf{Groupe :}}%
+}
+\newcommand\typeEXAM[1][\text@forbidden]{
+  \typefeuille{Examen}%
+  \td@numerofeuille[#1]%
+  \fancyhead[L]{\textbf{Numéro d'anonymat :}}
+}
 
 \newcommand\insertdate{
   \ifnum\number\month<8{
@@ -267,22 +303,19 @@
     innerrightmargin=10pt,
     innertopmargin=10pt,
     innerbottommargin=10pt
-  ]{graybox}
+  ]{graybox}%
   \newenvironment{correction}{%
-%    \needspace{5\baselineskip}%
     \begin{graybox}%
-%      \noindent\textbf{Correction.~} %\par\vspace{2mm}%
-  }{
-    \end{graybox}
-%    \par\vspace{1mm}
-  }
-}{
-  \newsavebox{\ignorebox}
-  \newenvironment{correction}{
-    \begin{lrbox}{\ignorebox}\begin{minipage}{\textwidth}
-  }{
-    \end{minipage}\end{lrbox}
-  }
+  }{%
+    \end{graybox}%
+  }%
+}{%
+  \newsavebox{\ignorebox}%
+  \newenvironment{correction}{%
+    \begin{lrbox}{\ignorebox}\begin{minipage}{\textwidth}%
+  }{%
+    \end{minipage}\end{lrbox}%
+  }%
 }
 
 
@@ -333,7 +366,7 @@
   \vskip 2em%
   \begin{center}%
     \LARGE
-    \emph{Feuille de \inserttypefeuille\insertnumberfeuille}
+    \emph{\inserttypefeuille\insertnumberfeuille}
     \par%
     \vspace{3mm}%
     \Large
@@ -365,8 +398,9 @@
 }{
   \fancyfoot[L]{{\footnotesize \insertcodeUE~--~\runningintituleUE}}
   \fancyfoot[C]{{\footnotesize \thepage/\pageref{LastPage}}}
-  \fancyfoot[R]{{\footnotesize \runningtypefeuille\insertnumberfeuille~--~\runningtitle}}
+  \fancyfoot[R]{{\footnotesize \runningtypefeuille\insertnumberfeuille\ifthenelse{\equal{\runningtitle}{}}{}{~--~\runningtitle}}}
 }
+
 \renewcommand{\footrulewidth}{.4pt}
 \renewcommand{\headrulewidth}{0pt}
 \renewcommand{\headwidth}{\hsize}
@@ -431,12 +465,4 @@
  
 \newcommand\response[2][]{\begin{responseenv}[#1]\vspace{#2}\end{responseenv}}
 
-
-
-
 \endinput
-
-%%% Local Variables: 
-%%% mode: latex
-%%% TeX-master: t
-%%% End: 
