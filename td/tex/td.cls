@@ -406,7 +406,30 @@
 }
 
 
+\newcommand\gradebox[1]{
+  \hspace\fill%
+    \begin{tikzpicture}
+      \draw[rounded corners=2pt, fill=black!10] (-2,0) rectangle (0,20pt);
+      \draw (0,10pt) node[left] {/ #1};
+    \end{tikzpicture}%
+}
 
+\newmdenv[
+  linewidth=1pt,
+  roundcorner=3pt,
+  innerleftmargin=10pt,
+  innerrightmargin=0pt,
+  innertopmargin=0pt,
+  innerbottommargin=10pt]{responseenvA}
+ 
+\newenvironment{responseenv}[1][]{%
+  \begin{responseenvA}%
+    \ifthenelse{\equal{#1}{}}{\vspace{10pt}}{\gradebox{#1}\vspace{-20pt}}%
+}{\end{responseenvA}}
+ 
+\ifcorrection{\newsavebox{\ignorebox}\renewenvironment{responseenv}{\begin{lrbox}{\ignorebox}\begin{minipage}{\textwidth}}{\end{minipage}\end{lrbox}}}
+ 
+\newcommand\response[2][]{\begin{responseenv}[#1]\vspace{#2}\end{responseenv}}
 
 
 
