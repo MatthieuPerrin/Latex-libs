@@ -27,6 +27,15 @@
   \LoadClass[twoside,a4paper,\tdcls@passedoptions]{book}%
 }{
   \LoadClass[a4paper,\tdcls@passedoptions]{article}%
+  \renewenvironment{abstract}{%
+    \vspace{-5mm}
+    \begin{center}
+      \begin{minipage}{.9\textwidth}
+        \it
+  }{
+      \end{minipage}
+    \end{center}
+  }
 }
 
 \RequirePackage{times}
@@ -83,17 +92,6 @@
 
 \newcommand\insertexercisenumber{\thetdcls@exercice}
 \if@tdcls@livret\gdef\insertexercisenumber{\thetdcls@session.\thetdcls@exercice} \fi
-
-\renewenvironment{abstract}{%
-  \vspace{-5mm}
-  \begin{center}
-    \begin{minipage}{.9\textwidth}
-      \it
-}{
-    \end{minipage}
-  \end{center}
-}
-
 
 \newcommand\inserttitle{}
 \newcommand\runningtitle{}
