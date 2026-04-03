@@ -148,9 +148,9 @@
   \fancyhead[L]{\textbf{Nom :}  \hspace{3cm} \textbf{Prénom :}  \hspace{3cm} \textbf{Numéro d'étudiant :} \hspace{2cm} \textbf{Groupe :}}%
 }
 \newcommand\typeCCTP[1][\text@forbidden]{%
-  \typefeuille[CCTP]{Contrôle continu de TP}%
+  \typefeuille{Contrôle continu de TP}%
   \td@numerofeuille[#1]%
-  \fancyhead[L]{\textbf{Nom :}  \hspace{3cm} \textbf{Prénom :}  \hspace{3cm} \textbf{Numéro d'étudiant :} \hspace{2cm} \textbf{Groupe :}}%
+  %\fancyhead[L]{\textbf{Nom :}  \hspace{3cm} \textbf{Prénom :}  \hspace{3cm} \textbf{Numéro d'étudiant :} \hspace{2cm} \textbf{Groupe :}}%
 }
 \newcommand\typeEXAM[1][\text@forbidden]{
   \typefeuille{Examen}%
