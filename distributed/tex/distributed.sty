@@ -8,6 +8,7 @@
 \SetKwFunction{SBroadcast}{synch-broadcast}
 \SetKwFunction{Broadcast}{broadcast}
 \SetKwFunction{Deliver}{deliver}
+
 \SetKw{Send}{send}
 \SetKw{Receive}{receive}
 \SetKw{Receives}{receives}
@@ -21,9 +22,10 @@
 \usetikzlibrary{decorations.pathmorphing}
 \usetikzlibrary{decorations.pathreplacing}
 
+\pgfdeclarelayer{execution@background}
 \pgfdeclarelayer{process@background}
 \pgfdeclarelayer{process@foreground}
-\pgfsetlayers{process@background, main, process@foreground}
+\pgfsetlayers{execution@background, process@background, main, process@foreground}
 
 
 \pgfkeysifdefined{/tikz/draw highlighted}{}{%
@@ -38,6 +40,36 @@
 }
 
 
+\pgfdeclarepatternformonly{badPattern}{\pgfqpoint{-4pt}{-4pt}}{\pgfqpoint{8pt}{8pt}}{\pgfqpoint{4pt}{4pt}}{
+  \pgfsetlinewidth{1.414pt}
+  \pgfpathmoveto{\pgfqpoint{0pt}{0pt}}
+  \pgfpathlineto{\pgfqpoint{4pt}{4pt}}
+  \pgfusepath{stroke}
+}
+
+\tikzset{
+  bad execution style/.style={
+    draw=alert, pattern=badPattern, pattern color=alert!15, rounded corners,
+  },
+  good execution style/.style={
+    draw=structure!40, fill=structure!7, rounded corners,
+  },
+  bad execution/.style={
+    execute at end picture={
+      \begin{pgfonlayer}{execution@background}
+        \path[bad execution style] (current bounding box.south west) rectangle (current bounding box.north east);
+      \end{pgfonlayer}
+    }
+  },
+  good execution/.style={
+    execute at end picture={
+      \begin{pgfonlayer}{execution@background}
+        \path[good execution style] (current bounding box.south west) rectangle (current bounding box.north east);
+      \end{pgfonlayer}
+    }
+  },
+}
+
 \tikzset{
   operation/.style={
     draw,
@@ -50,7 +82,8 @@
     align=center,
     inner xsep=3mm,
     inner ysep=1mm,
-    outer sep=-1mm,
+    outer xsep=-1mm,
+    outer ysep=10mm,
     minimum height=4mm,
   },
   event/.style={
@@ -65,6 +98,12 @@
   message/.style={
     {Circle[length=2.4pt,width=2.4pt]}-{Stealth[length=5pt]},
     shorten <=-1.2pt,
+    auto,
+  },
+  message error/.style={
+    {Circle[length=2pt,width=2pt]}-{Rays[length=10pt,width=10pt]},
+    shorten <=-1.2pt,
+    shorten >=-4pt,
     auto,
   },
   lin point/.style={
@@ -83,7 +122,7 @@
           \draw[thin, densely dotted] (\tikztostart) -- (\tikztotarget);
         \end{pgfonlayer}
       }
-      (\tikztostart) -- (\tikztotarget) \tikztonodes
+      (\tikztostart) -- (\tikztotarget)  ([xshift=4pt]\tikztotarget) \tikztonodes
     }
   },
   process/.style={
