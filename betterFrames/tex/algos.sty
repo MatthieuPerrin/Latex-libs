@@ -55,6 +55,13 @@
 \SetFuncSty{FuncStyle}
 \SetCommentSty{CommentStyle}
 
+\newcommand{\SetKwVariable}[2]{%
+  \expandafter\newcommand\csname #1\endcsname{%
+    \mathit{#2}%
+  }%
+}
+
+
 \newcommand\Algos@setFrench{
   \SetKwProg{Process}{processus}{ :}{}
   \SetKwProg{Algo}{algorithme}{ :}{}
@@ -62,9 +69,9 @@
   \SetKwProg{Fun}{fonction}{ :}{}
   \SetKwProg{Proc}{procédure}{ :}{}
   \SetKwProg{Command}{commande}{ :}{}
-  \SetKwProg{Event}{événement}{ :}{}
   \SetKwProg{Operation}{opération}{ :}{}
   \SetKwProg{Method}{méthode}{ :}{}
+  \SetKwProg{Event}{événement}{ :}{}
   \SetKwProg{Task}{faire régulièrement }{ :}{}
   \SetKwProg{Variables}{variables}{ :}{}
   \SetKwProg{LVariables}{variables locales}{ :}{}
@@ -84,6 +91,8 @@
   \SetKwBlock{Repeat}{répéter :}{}
   \SetKwProg{When}{quand}{ :}{}
   \SetKw{Wait}{attendre que}
+  \SetKw{Trigger}{déclencher}
+  \SetKwProg{Upon}{lors de}{:}{}
 
   \SetKw{False}{faux}
   \SetKw{True}{vrai}
@@ -92,6 +101,7 @@
   \SetKw{From}{de}
   \SetKw{To}{à}
   \SetKw{By}{par}
+  \SetKw{At}{chez}
 
   \SetKwFunction{Print}{écrire}
 }
@@ -103,9 +113,9 @@
   \SetKwProg{Fun}{function}{:}{}
   \SetKwProg{Proc}{procedure}{:}{}
   \SetKwProg{Command}{command}{ :}{}
-  \SetKwProg{Event}{event}{ :}{}
   \SetKwProg{Operation}{operation}{:}{}
   \SetKwProg{Method}{method}{ :}{}
+  \SetKwProg{Event}{event}{ :}{}
   \SetKwProg{Task}{do regularly}{:}{}
  
   \SetKwProg{Variables}{variables}{:}{}
@@ -126,6 +136,8 @@
   \SetKwBlock{Repeat}{repeat}{}
   \SetKwProg{When}{when}{:}{}
   \SetKw{Wait}{wait until}
+  \SetKw{Trigger}{trigger}
+  \SetKwProg{Upon}{upon}{:}{}
  
   \SetKw{False}{false}
   \SetKw{True}{true}
@@ -134,6 +146,7 @@
   \SetKw{From}{from}
   \SetKw{To}{to}
   \SetKw{By}{by}
+  \SetKw{At}{at}
  
   \SetKwFunction{Print}{print}
 }

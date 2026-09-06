@@ -4,15 +4,6 @@
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesPackage{distributed}[2025/09/24 Package for drawing distributed computing executions]
 
-\RequirePackage{algorithm2e}
-\SetKwFunction{SBroadcast}{synch-broadcast}
-\SetKwFunction{Broadcast}{broadcast}
-\SetKwFunction{Deliver}{deliver}
-
-\SetKw{Send}{send}
-\SetKw{Receive}{receive}
-\SetKw{Receives}{receives}
-
 \RequirePackage{tikz}
 \usetikzlibrary{patterns}
 \usetikzlibrary{arrows,shadows}
@@ -22,11 +13,30 @@
 \usetikzlibrary{decorations.pathmorphing}
 \usetikzlibrary{decorations.pathreplacing}
 
+\RequirePackage{algorithm2e}
+
+\SetKw{Send}{send}
+\SetKw{Receive}{receive}
+\SetKwFunction{SBroadcast}{synch-broadcast}
+\SetKwFunction{Broadcast}{broadcast}
+\SetKwFunction{Deliver}{deliver}
+
+\newcommand{\SetKwMessage}[2]{%
+  \expandafter\newcommand\csname #1\endcsname{%
+    \textup{\textsc{#2}}%
+  }%
+}
+
+\newcommand{\SetKwBroadcast}[2]{%
+  \expandafter\newcommand\csname #1\endcsname{%
+    \textbf{\textup{\textsc{#2}}}%
+  }%
+}
+
 \pgfdeclarelayer{execution@background}
 \pgfdeclarelayer{process@background}
 \pgfdeclarelayer{process@foreground}
 \pgfsetlayers{execution@background, process@background, main, process@foreground}
-
 
 \pgfkeysifdefined{/tikz/draw highlighted}{}{%
   \tikzset{%

@@ -105,16 +105,24 @@
   \tikz[baseline=(n.base)]{%
     \node[inner xsep=0pt, inner ysep=0pt, outer sep=0pt, rounded corners] (n) {#2};%
     \begin{pgfonlayer}{background}%
-      \node[rounded corners, fit=(n), inner xsep=3pt, inner ysep=1pt, outer sep=0pt, #1, fill highlighted] (bg) {};%
+      \node[rounded corners, fit=(n), inner xsep=1.5pt, inner ysep=1pt, outer sep=0pt, #1, fill highlighted] (bg) {};%
     \end{pgfonlayer}%
     \pgfresetboundingbox%
     \useasboundingbox (n.south west) rectangle (n.north east);%
   }%
 }
+\newcommand\overlay@nohighlight@text[1]{%
+  \tikz[baseline=(n.base)]{%
+    \node[inner xsep=0pt, inner ysep=0pt, outer sep=0pt, rounded corners] (n) {#1};%
+    \pgfresetboundingbox%
+    \useasboundingbox (n.south west) rectangle (n.north east);%
+  }%
+}
 \newcommand\overlay@highlight[2]{\ifmmode\overlay@highlight@text{#1}{$#2$}\else\overlay@highlight@text{#1}{#2}\fi}
+\newcommand\overlay@nohighlight[1]{\ifmmode\overlay@nohighlight@text{$#1$}\else\overlay@nohighlight@text{#1}\fi}
 
-\newcommand<>\highlight[2][]{\alt#3{\overlay@highlight{#1}{#2}}{#2}}
-\newcommand<>\highlightb[2][]{\altb#3{\overlay@highlight{#1}{#2}}{#2}}
+\newcommand<>\highlight[2][]{\alt#3{\overlay@highlight{#1}{#2}}{\overlay@nohighlight{#2}}}
+\newcommand<>\highlightb[2][]{\altb#3{\overlay@highlight{#1}{#2}}{\overlay@nohighlight{#2}}}
 \newcommand<>\textcolor [2]{\alt#3{{\color{#1}#2}}{#2}}
 \newcommand<>\textcolorb [2]{\altb#3{{\color{#1}#2}}{#2}}
 \newcommand<>\background [3][]{\highlight#4[fill=#2,#1]{#3}}
