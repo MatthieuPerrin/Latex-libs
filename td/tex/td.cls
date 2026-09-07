@@ -135,11 +135,11 @@
 }%
 
 \newcommand\typeTD[1][\text@forbidden]{%
-  \typefeuille[TD]{Feuille de travaux dirigés}%
+  \typefeuille[TD]{travaux dirigés}%
   \td@numerofeuille[#1]%
 }
 \newcommand\typeTP[1][\text@forbidden]{%
-  \typefeuille[TP]{Feuille de travaux pratiques}%
+  \typefeuille[TP]{travaux pratiques}%
   \td@numerofeuille[#1]%
 }
 \newcommand\typeCC[1][\text@forbidden]{%
@@ -364,7 +364,7 @@
   \vskip 2em%
   \begin{center}%
     \LARGE
-    \emph{\inserttypefeuille\insertnumberfeuille}
+    \emph{Feuille de \inserttypefeuille\insertnumberfeuille}
     \par%
     \vspace{3mm}%
     \Large

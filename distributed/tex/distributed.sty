@@ -33,10 +33,6 @@
   }%
 }
 
-\pgfdeclarelayer{execution@background}
-\pgfdeclarelayer{process@background}
-\pgfdeclarelayer{process@foreground}
-\pgfsetlayers{execution@background, process@background, main, process@foreground}
 
 \pgfkeysifdefined{/tikz/draw highlighted}{}{%
   \tikzset{%
@@ -110,6 +106,11 @@
     shorten <=-1.2pt,
     auto,
   },
+  messages/.append style={
+    every edge/.append style={
+      message,
+    },
+  },
   message error/.style={
     {Circle[length=2pt,width=2pt]}-{Rays[length=10pt,width=10pt]},
     shorten <=-1.2pt,
@@ -166,5 +167,10 @@
   bend left/.default=25,
   bend right/.default=25,
 }
+
+\pgfdeclarelayer{execution@background}
+\pgfdeclarelayer{process@background}
+\pgfdeclarelayer{process@foreground}
+\pgfsetlayers{execution@background, process@background, main, process@foreground}
 
 \endinput
