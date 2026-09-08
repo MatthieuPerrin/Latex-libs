@@ -14,7 +14,6 @@
 \usetikzlibrary{fit}
 \usetikzlibrary{backgrounds}
 
-
 \newcommand\tf@if@empty[3]{\if#1\ \ #2\else#3\fi}
 
 \tikzset{tf@style@tikz@added/.style={},}
@@ -119,7 +118,10 @@
   \endgroup%
 }
 
-\newcommand<>\on[2][]{\only#3{\tf@draw{#1}{#2}}}
+%\newenvironment{onEnv}[2][]{\tf@draw{#1}{#2}}}
+
+
+\newcommand<>\on[2][]{\uncover#3{\tf@draw{#1}{#2}}}
 \newcommand<>\onBlock[3][]{\on#4[text,#1]{\begin{block}{#2}#3\end{block}}}
 \newcommand<>\onAlertBlock[3][]{\on#4[text,#1]{\begin{alertblock}{#2}#3\end{alertblock}}}
 \newcommand<>\onExampleBlock[3][]{\on#4[text,#1]{\begin{exampleblock}{#2}#3\end{exampleblock}}}
