@@ -208,6 +208,15 @@
 \newcommand\footnoterefjava[1]{\footnoteref[\jfile]{#1}}
 \newcommand\footnoterefcpp[1]{\footnoteref[\cfile]{#1}}
 
+\newcommand\Minibox[1]{
+  \begin{center}
+    \begin{minipage}{14cm}
+      \begin{problembox}
+        #1
+      \end{problembox}
+    \end{minipage}
+  \end{center}
+}
 
 
 \newcommand{\citem}{}
@@ -222,4 +231,8 @@
                                          {\origitem[\cfile] \structure{##1}}\scriptsize}
                {\enditemize\endminipage}
 
+
+
+
+               
 \endinput
