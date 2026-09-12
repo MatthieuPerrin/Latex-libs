@@ -46,6 +46,35 @@
   \path let \p1=(2Darray@col-west), \p2=(2Darray@col-east) in 
   node[#1, text highlighted, draw=none, fill=none, text width=\dimexpr\x2-\x1-4pt\relax, minimum height=1, align=center, inner sep=0pt, outer sep=0] at (2Darray@box.center) {#2};
 }
+
+
+
+
+
+
+\usepackage{array}
+\newcolumntype\math[1]{>{\(}#1<{\)}}
+\newcounter{iteration}
  
+\newcommand*\tableonly{%
+  \omit\@ifnextchar<\table@only\table@@only%
+}%
+\protected\long\def\table@only<#1>#2{%
+  \gdef\beamer@doifnotinframe{\cr}%
+  \def\beamer@doifinframe{\cr#2}%
+  \beamer@masterdecode{#1}%
+  \beamer@donow
+}%
+\protected\long\def\table@@only#1{%
+  \beamer@ifnextcharospec{\table@@@only{#1}}{\cr#1}%
+}%
+\long\def\table@@@only#1<#2>{%
+  \gdef\beamer@doifnotinframe{\cr}%
+  \def\beamer@doifinframe{\cr#1}%
+  \beamer@masterdecode{#2}%
+  \beamer@donow
+}%
+
+
 \endinput
 

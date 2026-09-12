@@ -118,9 +118,6 @@
   \endgroup%
 }
 
-%\newenvironment{onEnv}[2][]{\tf@draw{#1}{#2}}}
-
-
 \newcommand<>\on[2][]{\uncover#3{\tf@draw{#1}{#2}}}
 \newcommand<>\onBlock[3][]{\on#4[text,#1]{\begin{block}{#2}#3\end{block}}}
 \newcommand<>\onAlertBlock[3][]{\on#4[text,#1]{\begin{alertblock}{#2}#3\end{alertblock}}}
@@ -138,6 +135,10 @@
 \newcommand<>\ohAlertBlock[3][]{\oh#4[text,#1]{\begin{alertblock}{#2}#3\end{alertblock}}}
 \newcommand<>\ohExampleBlock[3][]{\oh#4[text,#1]{\begin{exampleblock}{#2}#3\end{exampleblock}}}
 \newcommand<>\ohImage[2][]{\oh#3[#1]{\tf@image@draw{#2}}}
+
+\providecommand{\vFill}{\vskip0pt plus 1filll}
+\providecommand{\hFill}{\hspace{\fill}}
+
 
 \endinput
 
