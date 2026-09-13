@@ -458,9 +458,36 @@
   \begin{responseenvA}%
     \ifthenelse{\equal{#1}{}}{\vspace{10pt}}{\gradebox{#1}\vspace{-20pt}}%
 }{\end{responseenvA}}
- 
+
+
 \ifcorrection{\newsavebox{\ignorebox}\renewenvironment{responseenv}{\begin{lrbox}{\ignorebox}\begin{minipage}{\textwidth}}{\end{minipage}\end{lrbox}}}
- 
+
+
+
 \newcommand\response[2][]{\begin{responseenv}[#1]\vspace{#2}\end{responseenv}}
+
+
+
+\newenvironment{responses}[1][]{%
+  \begin{responseenvA}%
+    \ifthenelse{\equal{#1}{}}{\vspace{10pt}}{\gradebox{#1}\vspace{-20pt}}%
+}{\end{responseenvA}}
+
+\newenvironment{questions}[1][]{%
+  \begin{question}%
+    \ifthenelse{\equal{#1}{}}{\vspace{10pt}}{\gradebox{#1}\vspace{-20pt}}%
+}{\end{question}}
+
+\newenvironment{corrections}[1][]{%
+  \begin{correction}%
+    \ifthenelse{\equal{#1}{}}{\vspace{10pt}}{\gradebox{#1}\vspace{-20pt}}%
+}{\end{correction}}
+
+
+
+
+
+
+
 
 \endinput
