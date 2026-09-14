@@ -241,7 +241,7 @@
 }
 \NewDocumentCommand\insertnumerosession{}{%
   \ifx\tdcls@currentnumerosession\@empty\else
-    ~\tdcls@numbername~\tdcls@currentnumerosession
+    ~\no~\tdcls@currentnumerosession
   \fi
 }
 
@@ -408,7 +408,6 @@
 \newcommand\tdcls@exercisename{Exercice}
 \newcommand\tdcls@correctionname{CORRECTION}
 \newcommand\tdcls@complementname{pour aller plus loin}
-\newcommand\tdcls@numbername{n°}
 
 %\let\response\reponse
 %\let\responses\reponses
