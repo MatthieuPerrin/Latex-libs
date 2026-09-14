@@ -228,7 +228,7 @@
   \renewcommand\tdcls@clear@session{}%
 }
 
-\newcommand\inserttypesession{Travaux Dirigés}
+\newcommand\inserttypesession{Séance de Travaux Dirigés}
 \newcommand\runningtypesession{TD}
 \NewDocumentCommand\typesession{o m}{%
   \tdcls@set@longshort\inserttypesession\runningtypesession{#1}{#2}%
@@ -285,7 +285,7 @@
   \begin{center}%
     {%
       \Large\itshape
-      \tdcls@sessionname\inserttypesession\insertnumerosession
+      \inserttypesession\insertnumerosession
       \if@tdcls@appendix~---~\tdcls@complementname\fi
       \par
     }{%
@@ -404,7 +404,6 @@
 
 % Texts
 
-\newcommand\tdcls@sessionname{Séance de }
 \newcommand\tdcls@exercisename{Exercice}
 \newcommand\tdcls@correctionname{CORRECTION}
 \newcommand\tdcls@complementname{pour aller plus loin}
