@@ -1,11 +1,14 @@
-\def\td@version{2023/11/08, v. 1.0}
-\NeedsTeXFormat{LaTeX2e}[1995/12/01]
-\ProvidesClass{td}[\td@version Class used for exercise sheets and booklets]
+\NeedsTeXFormat{LaTeX2e}[2020/10/01]
+\ProvidesClass{td}[2026/09/13 v2.0 Class used for exercise sheets and booklets]
+
+% Options and base class
 
 \newif\if@tdcls@livret
 \@tdcls@livretfalse
 \DeclareOption{livret}{\@tdcls@livrettrue}
-\newcommand{\ifelse@tdcls@livret}[2]{\if@tdcls@livret#1\else#2\fi}
+\newcommand{\iflivret}[1]{\if@tdcls@livret#1\else\fi}
+\newcommand{\ifnotlivret}[1]{\if@tdcls@livret\else#1\fi}
+\newcommand{\ifelselivret}[2]{\if@tdcls@livret#1\else#2\fi}
 
 \newif\if@tdcls@correction
 \@tdcls@correctionfalse
@@ -14,160 +17,81 @@
 \newcommand{\ifnotcorrection}[1]{\if@tdcls@correction\else#1\fi}
 \newcommand{\ifelsecorrection}[2]{\if@tdcls@correction#1\else#2\fi}
 
-\let\tdcls@passedoptions\@empty
+\newif\if@tdcls@examoption
+\@tdcls@examoptionfalse
+\DeclareOption{examen}{\@tdcls@examoptiontrue}
+
+\newif\if@tdcls@ccoption
+\@tdcls@ccoptionfalse
+\DeclareOption{cc}{\@tdcls@ccoptiontrue}
+
 \DeclareOption*{%
-  \ifx\tdcls@passedoptions\@empty\edef\tdcls@passedoptions{\CurrentOption}%
-  \else\edef\tdcls@passedoptions{\tdcls@passedoptions,\CurrentOption}%
-  \fi%
+  \PassOptionsToClass{\CurrentOption}{article}%
+  \PassOptionsToClass{\CurrentOption}{book}%
 }
 
 \ProcessOptions\relax
 
-\ifelse@tdcls@livret{
-  \LoadClass[twoside,a4paper,\tdcls@passedoptions]{book}%
-}{
-  \LoadClass[a4paper,\tdcls@passedoptions]{article}%
-  \renewenvironment{abstract}{%
-    \vspace{-5mm}
-    \begin{center}
-      \begin{minipage}{.9\textwidth}
-        \it
-  }{
-      \end{minipage}
-    \end{center}
-  }
-}
+\if@tdcls@livret
+\LoadClass[twoside,a4paper]{book}
+\else
+\LoadClass[a4paper]{article}
+\fi
 
-\RequirePackage{times}
-\RequirePackage{fancyhdr}
+% Packages and tools
+
 \RequirePackage[french]{babel}
+\RequirePackage{geometry}
+\RequirePackage{newtxtext}
+\RequirePackage{newtxmath}
+\RequirePackage{fancyhdr}
 \RequirePackage{enumitem}
-\RequirePackage{etoolbox}
 \RequirePackage{amsmath}
-\RequirePackage{xparse}
-\RequirePackage{ifthen}
 \RequirePackage{xcolor}
-\RequirePackage[framemethod=TikZ]{mdframed}
-\RequirePackage[left=1.9cm, top=2.6cm, textwidth=16cm, textheight=24cm]{geometry}
 \RequirePackage{lastpage}
 \RequirePackage{needspace}
-
-
-\gdef\text@forbidden{@ @@ @'}
-\newcommand\ex@maybeparen[1]{%
-  \begingroup
-    \edef\ex@tmp{\detokenize{#1}}%
-    \ifx\ex@tmp\@empty
-      % rien
-    \else
-      ~(\unexpanded{#1})%
-    \fi
-  \endgroup
-}
-
-
+\RequirePackage{graphicx}
+\RequirePackage{tikz}
+\RequirePackage{tcolorbox}
+\tcbuselibrary{breakable,skins}
 
 \definecolor{charcoal}{RGB}{28,28,28}
-\newcounter{tdcls@exercice}
-\newcounter{tdcls@session}
 
-
-\renewcommand\paragraph[1]{%
-  \@startsection{paragraph}{4}{\z@}%
-    {-3.25ex \@plus -1ex \@minus -.2ex}%
-    {-1em}%
-    {\normalfont\itshape}%
-  {#1.}}
-
-
-
-
-
-\AtBeginDocument{%
-  \@ifpackageloaded{hyperref}{%
-    \providecommand*{\theHtdcls@session}{\arabic{tdcls@session}}%
-    \providecommand*{\theHtdcls@exercice}{\theHtdcls@session.\arabic{tdcls@exercice}}%
-  }{}%
+\ifelselivret{%
+  \geometry{textwidth=16cm,inner=2.8cm,top=2.6cm,textheight=24cm}%
+}{%
+  \geometry{textwidth=16cm,hcentering,top=2.6cm,textheight=24cm}%
 }
 
-\newcommand\insertexercisenumber{\thetdcls@exercice}
-\if@tdcls@livret\gdef\insertexercisenumber{\thetdcls@session.\thetdcls@exercice} \fi
+\newcommand\tdcls@set@short[3]{\IfNoValueTF{#2}{\gdef#1{#3}}{\gdef#1{#2}}}
+\newcommand\tdcls@set@longshort[4]{\gdef#1{#4}\tdcls@set@short#2{#3}{#4}}
+\newsavebox{\tdcls@ignorebox}%
+\newcommand\tdcls@hide@environment[1]{%
+  \newenvironment{#1}[1][]{%
+    \begin{lrbox}{\tdcls@ignorebox}%
+      \begin{minipage}{\textwidth}%
+  }{%
+      \end{minipage}%
+    \end{lrbox}%
+  }%
+}
+
+% Structure of the document
 
 \newcommand\inserttitle{}
 \newcommand\runningtitle{}
-\renewcommand\title[2][\text@forbidden]{%
-  \gdef\inserttitle{#2}%
-  \ifthenelse{\equal{#1}{\text@forbidden}}{
-    \gdef\runningtitle{#2}
-  }{
-    \gdef\runningtitle{#1}
-  }%
-}%
+\RenewDocumentCommand\title{o m}{%
+  \gdef\@title{#2}%
+  \gdef\inserttitle{\@title}%
+  \tdcls@set@short\runningtitle{#1}{#2}%
+}
 
-\newcommand\insertauthor{}
+\newcommand\insertauthor{\@author}
 \newcommand\runningauthor{}
-\renewcommand\author[2][\text@forbidden]{%
-  \gdef\insertauthor{#2}%
-  \ifthenelse{\equal{#1}{\text@forbidden}}{
-    \gdef\runningauthor{#2}
-  }{
-    \gdef\runningauthor{#1}
-  }%
+\RenewDocumentCommand\author{o m}{%
+  \gdef\@author{#2}%
+  \tdcls@set@short\runningauthor{#1}{#2}%
 }%
-
-\newcommand\insertnumberfeuille{}
-\newcommand\inserttypefeuille{}
-\newcommand\runningtypefeuille{}
-\newcommand\typefeuille[2][\text@forbidden]{
-  \gdef\inserttypefeuille{#2}
-  \ifthenelse{\equal{#1}{\text@forbidden}}{
-    \gdef\runningtypefeuille{#2}
-  }{
-    \gdef\runningtypefeuille{#1}
-  }
-}
-\newcommand\td@numerofeuille[1][\text@forbidden]{%
-  \ifthenelse{\equal{#1}{\text@forbidden}}{%
-    \gdef\insertnumberfeuille{}%
-  }{%
-    \gdef\insertnumberfeuille{~n° #1}%
-  }%
-}%
-
-\newcommand\typeTD[1][\text@forbidden]{%
-  \typefeuille[TD]{travaux dirigés}%
-  \td@numerofeuille[#1]%
-}
-\newcommand\typeTP[1][\text@forbidden]{%
-  \typefeuille[TP]{travaux pratiques}%
-  \td@numerofeuille[#1]%
-}
-\newcommand\typeCC[1][\text@forbidden]{%
-  \typefeuille{Contrôle continu}%
-  \td@numerofeuille[#1]%
-  \fancyhead[L]{\textbf{Nom :}  \hspace{3cm} \textbf{Prénom :}  \hspace{3cm} \textbf{Numéro d'étudiant :} \hspace{2cm} \textbf{Groupe :}}%
-}
-\newcommand\typeCCTP[1][\text@forbidden]{%
-  \typefeuille{Contrôle continu de TP}%
-  \td@numerofeuille[#1]%
-  %\fancyhead[L]{\textbf{Nom :}  \hspace{3cm} \textbf{Prénom :}  \hspace{3cm} \textbf{Numéro d'étudiant :} \hspace{2cm} \textbf{Groupe :}}%
-}
-\newcommand\typeEXAM[1][\text@forbidden]{
-  \typefeuille{Examen}%
-  \td@numerofeuille[#1]%
-  \fancyhead[L]{\textbf{Numéro d'anonymat :}}
-}
-
-\newcommand\insertdate{
-  \ifnum\number\month<8{
-    \advance\year by -1 \number\year/\advance\year by 1 \number\year
-  }\else{
-    \number\year/\advance\year by 1 \number\year
-  }\fi
-}
-\renewcommand{\date}[1]{
-  \gdef\insertdate{#1}
-}
 
 \newcommand\insertinstitution{}
 \newcommand\institution[1]{
@@ -179,15 +103,10 @@
   \gdef\insertlogo{\includegraphics[width=\textwidth,height=25mm,keepaspectratio]{#1}}
 }
 
-\newcommand\runningcursus{}
 \newcommand\insertcursus{}
-\newcommand{\cursus}[2][\text@forbidden]{
-  \gdef\insertcursus{#2}
-  \ifthenelse{\equal{#1}{\text@forbidden}}{
-    \gdef\runningcursus{#2}
-  }{
-    \gdef\runningcursus{#1}
-  }%
+\newcommand\runningcursus{}
+\NewDocumentCommand\cursus{o m}{%
+  \tdcls@set@longshort\insertcursus\runningcursus{#1}{#2}%
 }
 
 \newcommand\insertcodeUE{}
@@ -197,191 +116,73 @@
 
 \newcommand\insertintituleUE{}
 \newcommand\runningintituleUE{}
-\newcommand\intituleUE[2][\text@forbidden]{%
-  \gdef\insertintituleUE{#2}%
-  \ifthenelse{\equal{#1}{\text@forbidden}}{
-    \gdef\runningintituleUE{#2}
-  }{
-    \gdef\runningintituleUE{#1}
-  }%
-}%
+\NewDocumentCommand\intituleUE{o m}{%
+  \tdcls@set@longshort\insertintituleUE\runningintituleUE{#1}{#2}%
+}
 
-\newcommand\insertsession{}
-\newcommand\runningsession{}
-\newcommand\tdcls@set@session[2][\text@forbidden]{%
-  \@tdcls@appendixfalse%
-  \gdef\insertsession{#2}%
-  \ifthenelse{\equal{#1}{\text@forbidden}}{%
-    \gdef\runningsession{#2}%
-  }{%
-    \gdef\runningsession{#1}%
-  }%
-  \stepcounter{tdcls@session}%
-  \setcounter{tdcls@exercice}{0}%
-}%
-\newcommand\tdcls@print@top{%
+\newcommand\insertdate{%
+  \ifnum\month<8
+    \number\numexpr\year-1\relax/\number\year
+  \else
+    \number\year/\number\numexpr\year+1\relax
+  \fi
+}
+\renewcommand{\date}[1]{
+  \gdef\insertdate{#1}
+}
+
+\DeclareDocumentEnvironment{abstract}{}{%
+  \vspace{-5mm}%
   \begin{center}%
-    \begin{tikzpicture}%
-      \node[align=center, text width=\textwidth, minimum height=7mm, font=\Large, inner sep=0pt, outer sep=0pt] (number) {%
-        Séance \thetdcls@session\if@tdcls@appendix~---~pour aller plus loin\fi%
-      };
-      \node[align=center, text width=\textwidth, anchor=north, minimum height=8mm, font=\LARGE, inner sep=0pt, outer sep=0pt] (title) at (number.south) {%
-        \insertsession%
-      };
-      \draw ([xshift=-4cm, yshift=-2mm]title.south) -- ([xshift=4cm, yshift=-2mm]title.south);
-    \end{tikzpicture}%
+    \begin{minipage}{.9\textwidth}%
+      \itshape
+}{%
+    \end{minipage}%
   \end{center}%
 }
-\newcommand\tdcls@print@session[2][\text@forbidden]{%
-  \clearpage\tdcls@clear@session%
-  \tdcls@set@session[#1]{#2}%
-  \tdcls@print@top%
-}%
-\newcommand\session[2][\text@forbidden]{%
-  \tdcls@set@session[#1]{#2}%
-}
 
-\newcommand\tdcls@clear@session{}
-
-\newcommand\cleardoublepageatbeginsession{%
-  \renewcommand\tdcls@clear@session{\ifodd\value{page}~\newpage\fi}%
-}
-\newcommand\noeardoublepageatbeginsession{%
-  \renewcommand\tdcls@clear@session{}%
-}
-
-
-\AtBeginDocument{\ifnotcorrection{\let\session\tdcls@print@session}}
-
-\newif\if@tdcls@appendix
-\@tdcls@appendixfalse
-\newcommand\sessionappendix{%
-  \@tdcls@appendixtrue%
-  \ifnotcorrection{%
-    \clearpage%
-    \tdcls@print@top%
-  }
-}
-
-\newenvironment{exercice}[1][]{%
-  \ifcorrection{%
-    \if@tdcls@livret{
-      \clearpage
-      \tdcls@print@top
-    }\fi
-  }{}%
-  \needspace{3\baselineskip}%
-  \par\addvspace{5mm}%
-  \refstepcounter{tdcls@exercice}%
-  \noindent\textbf{Exercice \insertexercisenumber\ex@maybeparen{#1}.}%
-  \par\vspace{2mm}%
-}{\par\vspace{1mm}}
-
-%Environnement question
-
-\newlist{question}{enumerate}{1}
-\setlist[question, 1]{%
-  label={\bf\thetdcls@exercice\alph*.}, % Format des labels des questions
-  ref={\thetdcls@exercice\alph*}, % Format de la référence (Exercice.Question)
-  leftmargin=15mm,
-  resume % Permet de continuer la numérotation à travers les environnements
-}
-
-\newcommand\resetquestion{\restartlist{question}}
-
-%Environnement correction
-
-\ifelsecorrection{
-  \newmdenv[
-    backgroundcolor=charcoal!5,
-    linewidth=1pt,
-    linecolor=charcoal!50,
-    roundcorner=10pt,
-    innerleftmargin=10pt,
-    innerrightmargin=10pt,
-    innertopmargin=10pt,
-    innerbottommargin=10pt
-  ]{graybox}%
-  \newenvironment{correction}{%
-    \begin{graybox}%
-  }{%
-    \end{graybox}%
-  }%
-}{%
-  \newsavebox{\ignorebox}%
-  \newenvironment{correction}{%
-    \begin{lrbox}{\ignorebox}\begin{minipage}{\textwidth}%
-  }{%
-    \end{minipage}\end{lrbox}%
-  }%
-}
-
-
-\newcommand{\maketitlepage}{
-  \newpage  
-  \newgeometry{top=2.5cm,bottom=2.5cm,left=2cm,right=2cm}
-  \thispagestyle{empty}
-%  \begin{titlepage}
+\NewDocumentCommand{\maketitlepage}{}{%
+  \newgeometry{top=2.5cm,bottom=2.5cm,left=2.5cm,right=2.5cm}%
+  \begin{titlepage}
     \begin{minipage}{.4\textwidth}
       \centering
       \insertlogo
+      \par
+    \end{minipage}%
+    \begin{minipage}{.6\textwidth}
+      \raggedleft\large\bfseries\color{charcoal!70}
+      \insertcodeUE\par
+      \insertdate\par
+      \insertinstitution\par
     \end{minipage}
-   \hfill
-    \begin{minipage}{.4\textwidth}
-      \textbf{\color{charcoal!70}\insertcursus}
-    \end{minipage}
- 
     \vspace{4cm}
- 
     \begin{center}
-      \Huge
-      \rule{\linewidth}{0.8mm}\\[5mm]
-      \textsc{\insertintituleUE}
-      \rule{\linewidth}{0.8mm}\\[7mm]
-      \LARGE
-      Livret de \inserttypefeuille\\[3mm]
-      \insertdate
+      \rule{\linewidth}{0.8mm}\par
+      \vspace{4mm}
+      {\Huge\scshape\insertintituleUE\par}
+      \vspace{4mm}
+      \rule{\linewidth}{0.8mm}\par
+      \ifx\inserttitle\@empty\else\vspace{3mm}{\LARGE\inserttitle\par}\fi
+      \ifcorrection{\vspace{4mm}\LARGE\bfseries\color{charcoal}---~\tdcls@correctionname~---\par}%
     \end{center}
-    
     \vfill
- 
-    \begin{minipage}{.5\textwidth}
-      \textbf{\color{charcoal!70}\insertauthor}
+    \begin{minipage}[b]{.6\textwidth}
+      {\large\bfseries\color{charcoal!70}\insertauthor\par}%
+    \end{minipage}%
+    \begin{minipage}[b]{.4\textwidth}
+      {\raggedleft\large\bfseries\color{charcoal!70}\insertcursus\par}%
     \end{minipage}
-    \addtocounter{page}{-1}
-%  \end{titlepage}
+    \addtocounter{page}{-1}%
+  \end{titlepage}%
   \restoregeometry
-  \newpage  
 }
-
-
-\renewcommand{\maketitle}{
-  \begingroup%
-  \newpage%
-  \large%
-  \par\parindent0pt\insertcodeUE~--~\insertintituleUE \hfill \insertinstitution%
-  \par\parindent0pt\insertcursus     \hfill \insertdate%
-  \vskip 2em%
-  \begin{center}%
-    \LARGE
-    \emph{Feuille de \inserttypefeuille\insertnumberfeuille}
-    \par%
-    \vspace{3mm}%
-    \Large
-    \emph{\inserttitle}\par%
-    \ifcorrection{\textbf{\textcolor{red}{\LARGE ---~CORRECTION~---}}}
-    \vskip 1.5em%
-  \end{center}%
-  \par\vskip 1.5em
-  \endgroup
-}
-
-
 
 \pagestyle{fancy}
+\renewcommand{\footrulewidth}{.4pt}
+\renewcommand{\headrulewidth}{0pt}
 \fancyhead{}
-\ifelse@tdcls@livret{
-  \fancyhead[LE]{{\small Séance \thetdcls@session}}
+\ifelselivret{
+  \fancyhead[LE]{{\small \runningtypesession\insertnumerosession}}
   \fancyhead[CE]{}
   \fancyhead[RE]{{\small \insertinstitution}}
   \fancyhead[OL]{{\small \runningcursus}}
@@ -394,100 +195,223 @@
   \fancyfoot[OC]{}
   \fancyfoot[OR]{{\small \thepage/\pageref{LastPage}}}
 }{
+  \if@tdcls@examoption\fancyhead[L]{{\bfseries\color{charcoal!75}Numéro d'anonymat :}}\fi
+  \if@tdcls@ccoption\fancyhead[L]{{\bfseries\color{charcoal!75}Nom :\hspace{3cm}Prénom :\hspace{3cm}Numéro d'étudiant :\hspace{2cm}Groupe :}}\fi
   \fancyfoot[L]{{\footnotesize \insertcodeUE~--~\runningintituleUE}}
   \fancyfoot[C]{{\footnotesize \thepage/\pageref{LastPage}}}
-  \fancyfoot[R]{{\footnotesize \runningtypefeuille\insertnumberfeuille\ifthenelse{\equal{\runningtitle}{}}{}{~--~\runningtitle}}}
+  \fancyfoot[R]{{\footnotesize \runningtypesession\insertnumerosession\ifx\runningsession\@empty\else~--~\runningsession\fi}}
 }
 
-\renewcommand{\footrulewidth}{.4pt}
-\renewcommand{\headrulewidth}{0pt}
-\renewcommand{\headwidth}{\hsize}
-
-
-
-
-
-
-
-
-
-\newcommand\td@exercise@path{}
-\newcommand\td@correction@path{}
-
-\newcommand\td@correction@missing{%
-  \begin{correction}%
-    Correction manquante%
-  \end{correction}%
+\AtBeginDocument{%
+  \@ifpackageloaded{hyperref}{%
+    \providecommand*{\theHtdcls@session}{\arabic{tdcls@unit}}%
+    \providecommand*{\theHtdcls@exercice}{\theHtdcls@session.\arabic{tdcls@exercice}}%
+  }{}%
 }
 
-\newcommand\inputexercisepath[2][]{
-  \renewcommand\td@correction@path{#1}
-  \renewcommand\td@exercise@path{#2}
+% Sessions configuration
+
+\newcounter{tdcls@nextsession}
+\setcounter{tdcls@nextsession}{1}
+\newcounter{tdcls@unit}
+
+\newcommand\tdcls@currentnumerosession{}
+
+\newif\if@tdcls@appendix
+\@tdcls@appendixfalse
+
+\newcommand\tdcls@clear@session{}
+\newcommand\cleardoublepageatbeginsession{%
+  \renewcommand\tdcls@clear@session{\ifodd\value{page}\null\newpage\fi}%
+}
+\newcommand\nocleardoublepageatbeginsession{%
+  \renewcommand\tdcls@clear@session{}%
 }
 
+\newcommand\inserttypesession{Travaux Dirigés}
+\newcommand\runningtypesession{TD}
+\NewDocumentCommand\typesession{o m}{%
+  \tdcls@set@longshort\inserttypesession\runningtypesession{#1}{#2}%
+}
+\if@tdcls@examoption\typesession{Examen}\fi
+\if@tdcls@ccoption\typesession[CC]{Contrôle Continu}\fi
 
-\newcommand\inputexercise[1]{%
-  \input{\td@exercise@path/#1}%
-  \ifcorrection{%
-    \IfFileExists{\td@correction@path/#1.tex}{%
-      \input{\td@correction@path/#1}%
-    }{%
-      \td@correction@missing%
-    }%
+\NewDocumentCommand\numerosession{m}{%
+  \setcounter{tdcls@nextsession}{#1}%
+}
+\NewDocumentCommand\insertnumerosession{}{%
+  \ifx\tdcls@currentnumerosession\@empty\else
+    ~\tdcls@numbername~\tdcls@currentnumerosession
+  \fi
+}
+
+\newcommand\insertsession{}
+\newcommand\runningsession{}
+
+\NewDocumentCommand\session{s o m}{%
+  \clearpage
+  \tdcls@clear@session
+  \stepcounter{tdcls@unit}%
+  \@tdcls@appendixfalse
+
+  \IfBooleanTF{#1}{%
+    \gdef\tdcls@currentnumerosession{}%
+  }{%
+    \xdef\tdcls@currentnumerosession{\thetdcls@nextsession}%
+    \stepcounter{tdcls@nextsession}%
   }%
+
+  \tdcls@set@longshort\insertsession\runningsession{#2}{#3}%
+  \setcounter{tdcls@exercice}{0}%
+  \tdcls@print@session
 }
 
-
-\newcommand\gradebox[1]{
-  \hspace\fill%
-    \begin{tikzpicture}
-      \draw[rounded corners=2pt, fill=black!10] (-2,0) rectangle (0,20pt);
-      \draw (0,10pt) node[left] {/ #1};
-    \end{tikzpicture}%
+\newcommand\annexesession{%
+  \@tdcls@appendixtrue%
+  \clearpage%
+  \tdcls@print@session
 }
 
-\newmdenv[
-  linewidth=1pt,
-  roundcorner=3pt,
-  innerleftmargin=10pt,
-  innerrightmargin=0pt,
-  innertopmargin=0pt,
-  innerbottommargin=10pt]{responseenvA}
- 
-\newenvironment{responseenv}[1][]{%
-  \begin{responseenvA}%
-    \ifthenelse{\equal{#1}{}}{\vspace{10pt}}{\gradebox{#1}\vspace{-20pt}}%
-}{\end{responseenvA}}
+\newcommand\tdcls@print@session{%
+  \begingroup
+  \ifnotlivret{{
+    \setlength{\parindent}{0pt}
+    \large\bfseries\color{charcoal!75}
+    \noindent\insertintituleUE\hfill\insertcodeUE\par%
+    \noindent\insertcursus\hfill\insertdate\par%
+    \noindent\hfill\insertinstitution\par%
+    \vspace{2mm}
+  }}
+  \begin{center}%
+    {%
+      \Large\itshape
+      \tdcls@sessionname\inserttypesession\insertnumerosession
+      \if@tdcls@appendix~---~\tdcls@complementname\fi
+      \par
+    }{%
+      \vspace{1mm}\LARGE\insertsession\par
+    }{%
+      \ifnotlivret{\ifcorrection{\vspace{2mm}\LARGE\bfseries\color{charcoal}---~\tdcls@correctionname~---\par}}%
+    }{%
+      \iflivret{\vspace{2mm}\rule{8cm}{0.4pt}\par}
+    }
+  \end{center}%
+  \vspace{2mm}
+  \endgroup
+}
 
+% Exercice environnement
 
-\ifcorrection{\newsavebox{\ignorebox}\renewenvironment{responseenv}{\begin{lrbox}{\ignorebox}\begin{minipage}{\textwidth}}{\end{minipage}\end{lrbox}}}
+\newcounter{tdcls@exercice}
 
+\newcommand\insertexercisenumber{%
+  \iflivret{%
+    \ifx\tdcls@currentnumerosession\@empty\else%
+      \tdcls@currentnumerosession.%
+    \fi%
+  }%
+  \thetdcls@exercice%
+}
 
+\NewDocumentEnvironment{exercice}{o}{%
+  \needspace{3\baselineskip}%
+  \par\addvspace{5mm}%
+  \refstepcounter{tdcls@exercice}%
+  \edef\tdcls@questionprefix{\arabic{tdcls@exercice}}%
+  \noindent\textbf{\color{charcoal!85}\tdcls@exercisename~\insertexercisenumber\IfNoValueTF{#1}{}{~(#1)}.}%
+  \par\vspace{2mm}%
+}{\par\vspace{1mm}}
 
-\newcommand\response[2][]{\begin{responseenv}[#1]\vspace{#2}\end{responseenv}}
+% Questions environment
 
+\newcommand\tdcls@questionprefix{}
 
+\newlist{questions}{enumerate}{1}
+\setlist[questions,1]{%
+  label={\bfseries\color{charcoal!85}\tdcls@questionprefix\alph*.},
+  ref={\tdcls@questionprefix\alph*},
+  leftmargin=15mm,
+  resume
+}
 
-\newenvironment{responses}[1][]{%
-  \begin{responseenvA}%
-    \ifthenelse{\equal{#1}{}}{\vspace{10pt}}{\gradebox{#1}\vspace{-20pt}}%
-}{\end{responseenvA}}
+\newcommand\question[1]{%
+  \begin{questions}%
+  \item #1%
+  \end{questions}%
+}
 
-\newenvironment{questions}[1][]{%
-  \begin{question}%
-    \ifthenelse{\equal{#1}{}}{\vspace{10pt}}{\gradebox{#1}\vspace{-20pt}}%
-}{\end{question}}
+% Responses environnement
 
-\newenvironment{corrections}[1][]{%
-  \begin{correction}%
-    \ifthenelse{\equal{#1}{}}{\vspace{10pt}}{\gradebox{#1}\vspace{-20pt}}%
-}{\end{correction}}
+\newcommand\tdcls@draw@grade[1]{%
+  \if\relax\detokenize{#1}\relax\else
+  \coordinate (grade-tl) at ([xshift=-2cm]interior.north east);
+  \coordinate (grade-tr) at (interior.north east);
+  \coordinate (grade-br) at ([yshift=-20pt]interior.north east);
+  \coordinate (grade-bl) at ([xshift=-2cm,yshift=-20pt]interior.north east);
+  \path[fill=black!10] (grade-tl) -- ([xshift=-3pt]grade-tr) arc[start angle=90, end angle=0, radius=3pt]
+  -- (grade-br) -- ([xshift=3pt]grade-bl) arc[start angle=-90, end angle=-180, radius=3pt] -- (grade-tl) -- cycle;
+  \draw[rounded corners=3pt, thick] (grade-tl) -- (grade-bl) -- (grade-br);
+  \node[anchor=east, inner xsep=3pt] at ([yshift=-10pt]interior.north east) {/ #1};
+  \fi
+}
 
+\ifelsecorrection{\tdcls@hide@environment{responses}}{
+  \newtcolorbox{responses}[1][]{%
+    enhanced,
+    breakable,
+    enlargepage flexible=10pt,
+    colback=white,
+    colframe=black,
+    boxrule=1pt,
+    arc=3pt,
+    boxsep=0pt,
+    left=10pt,
+    right=0pt,
+    top=0pt,
+    bottom=10pt,
+    before skip=5pt,
+    after skip=5pt,
+    overlay unbroken and first={%
+      \tdcls@draw@grade{#1}%
+    }
+  }
+}
 
+\newcommand\response[2][]{\begin{responses}[#1]\vspace{#2}\end{responses}}
 
+% Correction environnement
 
+\ifelsecorrection{%
+  \newtcolorbox{corrections}{%
+    enhanced,
+    breakable,
+    enlargepage flexible=10pt,
+    colback=charcoal!5,
+    colframe=charcoal!50,
+    boxrule=1pt,
+    arc=10pt,
+    boxsep=0pt,
+    left=10pt,
+    right=10pt,
+    top=10pt,
+    bottom=10pt,
+    before skip=5pt,
+    after skip=5pt
+  }%
+}{\tdcls@hide@environment{corrections}}
 
+\newcommand\correction[1]{\begin{corrections}#1\end{corrections}}
 
+% Texts
 
+\newcommand\tdcls@sessionname{Séance de }
+\newcommand\tdcls@exercisename{Exercice}
+\newcommand\tdcls@correctionname{CORRECTION}
+\newcommand\tdcls@complementname{pour aller plus loin}
+\newcommand\tdcls@numbername{n°}
+
+%\let\response\reponse
+%\let\responses\reponses
+%\let\endresponses\endreponses
 
 \endinput
