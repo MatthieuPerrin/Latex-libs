@@ -6,16 +6,23 @@
 \newif\if@tdcls@livret
 \@tdcls@livretfalse
 \DeclareOption{livret}{\@tdcls@livrettrue}
-\newcommand{\iflivret}[1]{\if@tdcls@livret#1\else\fi}
-\newcommand{\ifnotlivret}[1]{\if@tdcls@livret\else#1\fi}
-\newcommand{\ifelselivret}[2]{\if@tdcls@livret#1\else#2\fi}
+\providecommand\iflivret[1]{\if@tdcls@livret#1\else\fi}
+\providecommand\ifnotlivret[1]{\if@tdcls@livret\else#1\fi}
+\providecommand\ifelselivret[2]{\if@tdcls@livret#1\else#2\fi}
+
+\newif\if@tdcls@reponse
+\@tdcls@reponsefalse
+\DeclareOption{reponse}{\@tdcls@reponsetrue}
+\providecommand\ifreponse[1]{\if@tdcls@reponse#1\else\fi}
+\providecommand\ifnotreponse[1]{\if@tdcls@reponse\else#1\fi}
+\providecommand\ifelsereponse[2]{\if@tdcls@reponse#1\else#2\fi}
 
 \newif\if@tdcls@correction
 \@tdcls@correctionfalse
-\DeclareOption{correction}{\@tdcls@correctiontrue}
-\newcommand{\ifcorrection}[1]{\if@tdcls@correction#1\else\fi}
-\newcommand{\ifnotcorrection}[1]{\if@tdcls@correction\else#1\fi}
-\newcommand{\ifelsecorrection}[2]{\if@tdcls@correction#1\else#2\fi}
+\DeclareOption{correction}{\@tdcls@reponsefalse\@tdcls@correctiontrue}
+\providecommand\ifcorrection[1]{\if@tdcls@correction#1\else\fi}
+\providecommand\ifnotcorrection[1]{\if@tdcls@correction\else#1\fi}
+\providecommand\ifelsecorrection[2]{\if@tdcls@correction#1\else#2\fi}
 
 \newif\if@tdcls@examoption
 \@tdcls@examoptionfalse
@@ -41,6 +48,8 @@
 % Packages and tools
 
 \RequirePackage[french]{babel}
+\RequirePackage{etoolbox}
+\RequirePackage{xfp}
 \RequirePackage{geometry}
 \RequirePackage{newtxtext}
 \RequirePackage{newtxmath}
@@ -75,64 +84,71 @@
     \end{lrbox}%
   }%
 }
+\tcbset{%
+  tdcls minimum height/.code={%
+    \ifblank{#1}{}{%
+      \tcbset{height from={#1} to \textheight}%
+    }%
+  }%
+}
 
 % Structure of the document
 
-\newcommand\inserttitle{}
-\newcommand\runningtitle{}
+\providecommand\inserttitle{}
+\providecommand\runningtitle{}
 \RenewDocumentCommand\title{o m}{%
   \gdef\@title{#2}%
   \gdef\inserttitle{\@title}%
   \tdcls@set@short\runningtitle{#1}{#2}%
 }
 
-\newcommand\insertauthor{\@author}
-\newcommand\runningauthor{}
+\providecommand\insertauthor{\@author}
+\providecommand\runningauthor{}
 \RenewDocumentCommand\author{o m}{%
   \gdef\@author{#2}%
   \tdcls@set@short\runningauthor{#1}{#2}%
 }%
 
-\newcommand\insertinstitution{}
-\newcommand\institution[1]{
+\providecommand\insertinstitution{}
+\providecommand\institution[1]{
   \gdef\insertinstitution{#1}
 }
 
-\newcommand\insertlogo{}
-\newcommand\logo[1]{
+\providecommand\insertlogo{}
+\providecommand\logo[1]{
   \gdef\insertlogo{\includegraphics[width=\textwidth,height=25mm,keepaspectratio]{#1}}
 }
 
-\newcommand\insertcursus{}
-\newcommand\runningcursus{}
+\providecommand\insertcursus{}
+\providecommand\runningcursus{}
 \NewDocumentCommand\cursus{o m}{%
   \tdcls@set@longshort\insertcursus\runningcursus{#1}{#2}%
 }
 
-\newcommand\insertcodeUE{}
-\newcommand{\codeUE}[1]{
+\providecommand\insertcodeUE{}
+\providecommand{\codeUE}[1]{
   \gdef\insertcodeUE{#1}
 }
 
-\newcommand\insertintituleUE{}
-\newcommand\runningintituleUE{}
+\providecommand\insertintituleUE{}
+\providecommand\runningintituleUE{}
 \NewDocumentCommand\intituleUE{o m}{%
   \tdcls@set@longshort\insertintituleUE\runningintituleUE{#1}{#2}%
 }
 
-\newcommand\insertdate{%
+\providecommand\insertdate{%
   \ifnum\month<8
     \number\numexpr\year-1\relax/\number\year
   \else
     \number\year/\number\numexpr\year+1\relax
   \fi
 }
-\renewcommand{\date}[1]{
+\renewcommand\date[1]{
   \gdef\insertdate{#1}
 }
 
 \DeclareDocumentEnvironment{abstract}{}{%
-  \vspace{-5mm}%
+  \vspace{2mm}%
   \begin{center}%
     \begin{minipage}{.9\textwidth}%
       \itshape
@@ -141,7 +157,7 @@
   \end{center}%
 }
 
-\NewDocumentCommand{\maketitlepage}{}{%
+\NewDocumentCommand\maketitlepage{}{%
   \newgeometry{top=2.5cm,bottom=2.5cm,left=2.5cm,right=2.5cm}%
   \begin{titlepage}
     \begin{minipage}{.4\textwidth}
@@ -178,8 +194,8 @@
 }
 
 \pagestyle{fancy}
-\renewcommand{\footrulewidth}{.4pt}
-\renewcommand{\headrulewidth}{0pt}
+\renewcommand\footrulewidth{.4pt}
+\renewcommand\headrulewidth{0pt}
 \fancyhead{}
 \ifelselivret{
   \fancyhead[LE]{{\small \runningtypesession\insertnumerosession}}
@@ -204,8 +220,8 @@
 
 \AtBeginDocument{%
   \@ifpackageloaded{hyperref}{%
-    \providecommand*{\theHtdcls@session}{\arabic{tdcls@unit}}%
-    \providecommand*{\theHtdcls@exercice}{\theHtdcls@session.\arabic{tdcls@exercice}}%
+    \newcommand*{\theHtdcls@session}{\arabic{tdcls@unit}}%
+    \newcommand*{\theHtdcls@exercice}{\theHtdcls@session.\arabic{tdcls@exercice}}%
   }{}%
 }
 
@@ -221,15 +237,15 @@
 \@tdcls@appendixfalse
 
 \newcommand\tdcls@clear@session{}
-\newcommand\cleardoublepageatbeginsession{%
+\providecommand\cleardoublepageatbeginsession{%
   \renewcommand\tdcls@clear@session{\ifodd\value{page}\null\newpage\fi}%
 }
-\newcommand\nocleardoublepageatbeginsession{%
+\providecommand\nocleardoublepageatbeginsession{%
   \renewcommand\tdcls@clear@session{}%
 }
 
-\newcommand\inserttypesession{Séance de Travaux Dirigés}
-\newcommand\runningtypesession{TD}
+\providecommand\inserttypesession{Séance de Travaux Dirigés}
+\providecommand\runningtypesession{TD}
 \NewDocumentCommand\typesession{o m}{%
   \tdcls@set@longshort\inserttypesession\runningtypesession{#1}{#2}%
 }
@@ -245,8 +261,8 @@
   \fi
 }
 
-\newcommand\insertsession{}
-\newcommand\runningsession{}
+\providecommand\insertsession{}
+\providecommand\runningsession{}
 
 \NewDocumentCommand\session{s o m}{%
   \clearpage
@@ -266,7 +282,7 @@
   \tdcls@print@session
 }
 
-\newcommand\annexesession{%
+\providecommand\annexesession{%
   \@tdcls@appendixtrue%
   \clearpage%
   \tdcls@print@session
@@ -300,11 +316,117 @@
   \endgroup
 }
 
+% Bareme command
+
+\newcommand\tdcls@pendinggrades{}
+\newcommand\tdcls@exercisegrades{}
+\newcommand\tdcls@currentgrade{}
+\newcommand\tdcls@totalgrade{}
+
+\newcounter{tdcls@gradeindex}
+\newcounter{tdcls@gradecursor}
+\newcounter{tdcls@gradecount}
+
+\NewDocumentCommand\bareme{m}{%
+  \gdef\tdcls@pendinggrades{#1}%
+}
+
+\newcommand\tdcls@grading@add[1]{%
+  \stepcounter{tdcls@gradecount}%
+  \xdef\tdcls@totalgrade{%
+    \fpeval{\tdcls@totalgrade+(#1)}%
+  }%
+}
+
+\newcommand\tdcls@grading@select[1]{%
+  \stepcounter{tdcls@gradecursor}%
+  \ifnum\value{tdcls@gradecursor}=\value{tdcls@gradeindex}%
+    \gdef\tdcls@currentgrade{#1}%
+    \listbreak
+  \fi
+}
+
+\newcommand\tdcls@grading@begin{%
+  \global\let\tdcls@exercisegrades\tdcls@pendinggrades
+  \global\let\tdcls@pendinggrades\@empty
+  \setcounter{tdcls@gradeindex}{0}%
+  \setcounter{tdcls@gradecount}{0}%
+  \gdef\tdcls@currentgrade{}%
+  \gdef\tdcls@totalgrade{}%
+  \ifdefempty{\tdcls@exercisegrades}{}{%
+    \gdef\tdcls@totalgrade{0}%
+    \begingroup
+      \let\do\tdcls@grading@add
+      \expandafter\docsvlist\expandafter{%
+        \tdcls@exercisegrades
+      }%
+    \endgroup
+  }%
+}
+
+\newcommand\tdcls@grading@nextquestion{%
+  \gdef\tdcls@currentgrade{}%
+  \ifdefempty{\tdcls@exercisegrades}{}{%
+    \stepcounter{tdcls@gradeindex}%
+    \setcounter{tdcls@gradecursor}{0}%
+    \begingroup
+      \let\do\tdcls@grading@select
+      \expandafter\docsvlist\expandafter{%
+        \tdcls@exercisegrades
+      }%
+    \endgroup
+  }%
+}
+
+\newcommand\tdcls@grading@end{%
+  \ifdefempty{\tdcls@exercisegrades}{}{%
+    \ifnum\value{tdcls@gradeindex}=\value{tdcls@gradecount}%
+    \else\ClassWarning{td}{%
+      Bareme incoherent:
+      \space\arabic{tdcls@gradecount} notes
+      pour \arabic{tdcls@gradeindex} questions%
+    }\fi
+  }%
+  \gdef\tdcls@exercisegrades{}%
+  \gdef\tdcls@currentgrade{}%
+  \gdef\tdcls@totalgrade{}%
+}
+
+\newcommand\tdcls@grading@ifactive[2]{%
+  \ifdefempty{\tdcls@exercisegrades}{#2}{#1}%
+}
+
+\newcommand\tdcls@grading@ifcurrent[2]{%
+  \ifdefempty{\tdcls@currentgrade}{#2}{#1}%
+}
+
+\newcommand\tdcls@draw@grade{%
+  \tdcls@grading@ifcurrent{%
+    \coordinate (grade-tl) at ([xshift=-2cm]interior.north east);
+    \coordinate (grade-tr) at (interior.north east);
+    \coordinate (grade-br) at ([yshift=-20pt]interior.north east);
+    \coordinate (grade-bl) at ([xshift=-2cm,yshift=-20pt]interior.north east);
+    \path[fill=black!10] (grade-tl) -- ([xshift=-5pt]grade-tr) arc[start angle=90, end angle=0, radius=5pt]
+    -- (grade-br) -- ([xshift=5pt]grade-bl) arc[start angle=-90, end angle=-180, radius=5pt] -- (grade-tl) -- cycle;
+    \draw[charcoal!75, rounded corners=5pt, thick] (grade-tl) -- (grade-bl) -- (grade-br);
+    \node[anchor=east, inner xsep=3pt] at ([yshift=-10pt]interior.north east) {/ \tdcls@currentgrade};
+  }{}%
+}
+
+\newcommand\tdcls@draw@exercisegrade{%
+  \tdcls@grading@ifactive{\nobreak\hfill%
+    \begin{tikzpicture}[baseline=(grade.base)]
+    \draw[charcoal!75, fill=black!10, rounded corners=5pt] (0,0) rectangle (2cm,20pt);
+    \node[anchor=east, inner xsep=3pt] (grade) at (2cm,10pt) {/ \tdcls@totalgrade};
+    \end{tikzpicture}%
+  }{}
+}
+
 % Exercice environnement
 
 \newcounter{tdcls@exercice}
 
-\newcommand\insertexercisenumber{%
+\providecommand\insertexercisenumber{%
   \iflivret{%
     \ifx\tdcls@currentnumerosession\@empty\else%
       \tdcls@currentnumerosession.%
@@ -314,102 +436,117 @@
 }
 
 \NewDocumentEnvironment{exercice}{o}{%
+  \tdcls@grading@begin
   \needspace{3\baselineskip}%
   \par\addvspace{5mm}%
   \refstepcounter{tdcls@exercice}%
   \edef\tdcls@questionprefix{\arabic{tdcls@exercice}}%
   \noindent\textbf{\color{charcoal!85}\tdcls@exercisename~\insertexercisenumber\IfNoValueTF{#1}{}{~(#1)}.}%
+  \tdcls@draw@exercisegrade%
   \par\vspace{2mm}%
-}{\par\vspace{1mm}}
+}{%
+  \tdcls@grading@end
+  \par\vspace{1mm}%
+}
 
 % Questions environment
 
 \newcommand\tdcls@questionprefix{}
 
 \newlist{questions}{enumerate}{1}
+
 \setlist[questions,1]{%
   label={\bfseries\color{charcoal!85}\tdcls@questionprefix\alph*.},
   ref={\tdcls@questionprefix\alph*},
   leftmargin=15mm,
-  resume
+  resume,
+  before={%
+    \let\tdcls@original@item\item
+    \def\item{%
+      \ifdefstring{\@currenvir}{questions}{%
+        \tdcls@grading@nextquestion
+      }{}%
+      \tdcls@original@item
+    }%
+  }
 }
 
-\newcommand\question[1]{%
+\providecommand\question[1]{%
   \begin{questions}%
   \item #1%
   \end{questions}%
 }
 
-% Responses environnement
+% Reponses environnement
 
-\newcommand\tdcls@draw@grade[1]{%
-  \if\relax\detokenize{#1}\relax\else
-  \coordinate (grade-tl) at ([xshift=-2cm]interior.north east);
-  \coordinate (grade-tr) at (interior.north east);
-  \coordinate (grade-br) at ([yshift=-20pt]interior.north east);
-  \coordinate (grade-bl) at ([xshift=-2cm,yshift=-20pt]interior.north east);
-  \path[fill=black!10] (grade-tl) -- ([xshift=-3pt]grade-tr) arc[start angle=90, end angle=0, radius=3pt]
-  -- (grade-br) -- ([xshift=3pt]grade-bl) arc[start angle=-90, end angle=-180, radius=3pt] -- (grade-tl) -- cycle;
-  \draw[rounded corners=3pt, thick] (grade-tl) -- (grade-bl) -- (grade-br);
-  \node[anchor=east, inner xsep=3pt] at ([yshift=-10pt]interior.north east) {/ #1};
-  \fi
-}
-
-\ifelsecorrection{\tdcls@hide@environment{responses}}{
-  \newtcolorbox{responses}[1][]{%
+\ifelsereponse{
+  \newtcolorbox{reponses}[1][]{%
     enhanced,
     breakable,
     enlargepage flexible=10pt,
     colback=white,
-    colframe=black,
+    colframe=charcoal!75,
     boxrule=1pt,
-    arc=3pt,
-    boxsep=0pt,
-    left=10pt,
-    right=0pt,
-    top=0pt,
-    bottom=10pt,
-    before skip=5pt,
-    after skip=5pt,
-    overlay unbroken and first={%
-      \tdcls@draw@grade{#1}%
-    }
-  }
-}
-
-\newcommand\response[2][]{\begin{responses}[#1]\vspace{#2}\end{responses}}
-
-% Correction environnement
-
-\ifelsecorrection{%
-  \newtcolorbox{corrections}{%
-    enhanced,
-    breakable,
-    enlargepage flexible=10pt,
-    colback=charcoal!5,
-    colframe=charcoal!50,
-    boxrule=1pt,
-    arc=10pt,
+    arc=5pt,
     boxsep=0pt,
     left=10pt,
     right=10pt,
     top=10pt,
     bottom=10pt,
     before skip=5pt,
-    after skip=5pt
+    after skip=5pt,
+    tdcls minimum height={#1},
+    overlay unbroken and first={%
+      \tdcls@draw@grade%
+    }
+  }
+}{\tdcls@hide@environment{reponses}}
+
+\NewDocumentCommand\reponse{O{}}{\begin{reponses}[#1]\end{reponses}}
+
+% Correction environnement
+
+\ifelsecorrection{%
+  \newtcolorbox{corrections}[1][]{%
+    enhanced,
+    breakable,
+    enlargepage flexible=10pt,
+    colback=charcoal!5,
+    colframe=charcoal!75,
+    boxrule=1pt,
+    arc=5pt,
+    boxsep=0pt,
+    left=10pt,
+    right=10pt,
+    top=10pt,
+    bottom=10pt,
+    before skip=5pt,
+    after skip=5pt,
+    tdcls minimum height={#1},
+    overlay unbroken and first={%
+      \tdcls@draw@grade%
+    }
   }%
 }{\tdcls@hide@environment{corrections}}
 
-\newcommand\correction[1]{\begin{corrections}#1\end{corrections}}
+\NewDocumentCommand\correction{O{} +m}{\begin{corrections}[#1]#2\end{corrections}}
+
+% Solutions environnement
+
+\NewDocumentEnvironment{solutions}{O{}}{%
+  \begin{reponses}[#1]%
+  \end{reponses}%
+  \begin{corrections}[#1]%
+}{%
+  \end{corrections}%
+}
+
+\NewDocumentCommand\solution{O{} +m}{\begin{solutions}[#1]#2\end{solutions}}
 
 % Texts
 
-\newcommand\tdcls@exercisename{Exercice}
-\newcommand\tdcls@correctionname{CORRECTION}
-\newcommand\tdcls@complementname{pour aller plus loin}
-
-%\let\response\reponse
-%\let\responses\reponses
-%\let\endresponses\endreponses
+\providecommand\tdcls@exercisename{Exercice}
+\providecommand\tdcls@correctionname{CORRECTION}
+\providecommand\tdcls@complementname{pour aller plus loin}
 
 \endinput
