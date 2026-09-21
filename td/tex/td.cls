@@ -428,9 +428,9 @@
 
 \providecommand\insertexercisenumber{%
   \iflivret{%
-    \ifx\tdcls@currentnumerosession\@empty\else%
+    \ifdefempty{\tdcls@currentnumerosession}{}{%
       \tdcls@currentnumerosession.%
-    \fi%
+    }%
   }%
   \thetdcls@exercice%
 }
