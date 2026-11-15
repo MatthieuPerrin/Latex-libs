@@ -7,6 +7,8 @@
 \RequirePackage{ccicons}
 \RequirePackage{etoolbox} 
 \RequirePackage{environ}
+\RequirePackage{listings}
+\RequirePackage{fancyvrb}
 
 \RequirePackage{tikz}
 \usetikzlibrary{tikzmark}
@@ -139,6 +141,20 @@
 \providecommand{\vFill}{\vskip0pt plus 1filll}
 \providecommand{\hFill}{\hspace{\fill}}
 
+
+\newenvironment{saveListing}[2][gobble=2]
+  {%
+    \expandafter\xdef\csname tf@listing@#2\endcsname{%
+      \jobname-\arabic{framenumber}-#2.tmp%
+    }%
+    \VerbatimEnvironment
+    \begin{VerbatimOut}[#1]{\csname tf@listing@#2\endcsname}%
+  }
+  {\end{VerbatimOut}}
+
+\newcommand{\useListing}[2][]{%
+  \lstinputlisting[gobble=0,#1]{\csname tf@listing@#2\endcsname}%
+}
 
 \endinput
 

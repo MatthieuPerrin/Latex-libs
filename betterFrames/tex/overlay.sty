@@ -73,25 +73,37 @@
   fill highlighted/.style={},
   text highlighted/.style={},
   draw highlighted/.style={},
-  alert/.append style={alertColor,
+  alert/.append style={
+    alertColor,
+    draw=alertColor,
+    text=alertColor,
     draw highlighted/.append style={draw=alert},
     text highlighted/.append style={text=alert},
-    fill highlighted/.append style={fill=alert!30},
+    fill highlighted/.append style={fill=alert!20},
   },
-  example/.append style={exampleColor,
+  example/.append style={
+    exampleColor,
+    draw=exampleColor,
+    text=exampleColor,
     draw highlighted/.append style={draw=example},
     text highlighted/.append style={text=example},
-    fill highlighted/.append style={fill=example!30},
+    fill highlighted/.append style={fill=example!20},
   },
-  structure/.append style={structureColor,
+  structure/.append style={
+    structureColor,
+    draw=structureColor,
+    text=structureColor,
     draw highlighted/.append style={draw=structure},
     text highlighted/.append style={text=structure},
-    fill highlighted/.append style={fill=structure!30},
+    fill highlighted/.append style={fill=structure!20},
   },
-  fade/.append style={fadeColor,
-    draw highlighted/.append style={draw=black!30},
-    text highlighted/.append style={text=black!30},
-    fill highlighted/.append style={fill=black!10},
+  fade/.append style={
+    fadeColor,
+    draw=fadeColor,
+    text=fadeColor,
+    draw highlighted/.append style={draw=black!40},
+    text highlighted/.append style={text=black!40},
+    fill highlighted/.append style={fill=black!15},
   },
   background/.style={on background layer,},
 }
@@ -105,7 +117,7 @@
   \tikz[baseline=(n.base)]{%
     \node[inner xsep=0pt, inner ysep=0pt, outer sep=0pt, rounded corners] (n) {#2};%
     \begin{pgfonlayer}{background}%
-      \node[rounded corners, fit=(n), inner xsep=1.5pt, inner ysep=1pt, outer sep=0pt, #1, fill highlighted] (bg) {};%
+      \node[rounded corners, fit=(n), inner xsep=1.5pt, inner ysep=1pt, outer sep=0pt, minimum height=1.1em, #1, fill highlighted] (bg) {};%
     \end{pgfonlayer}%
     \pgfresetboundingbox%
     \useasboundingbox (n.south west) rectangle (n.north east);%
@@ -167,7 +179,6 @@
 
 
 
-
 \newcommand\overlays@text{}
  
 \newcommand<>\overlay@on[1]{\onlyb#2{\renewcommand\overlays@text{#1}}}
@@ -184,17 +195,6 @@
 }
 
 \usetikzlibrary{fit,backgrounds,automata,positioning,overlay-beamer-styles,matrix,shapes}
-
-
-
-
-
-
-
-
-
-
-
 
 \let\beamer@origfootnote\footnote
 \newcommand<>\myfootnote[2][frame]{\beamer@origfootnote#3[#1]{#2}}

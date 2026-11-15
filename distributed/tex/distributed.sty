@@ -53,6 +53,54 @@
   \pgfusepath{stroke}
 }
 
+\newcommand{\operationxsep}{2pt}
+\newcommand{\operationstep}{2mm}
+
+\pgfdeclareshape{operation rectangle}{
+  \inheritsavedanchors[from=rectangle]
+  \inheritbackgroundpath[from=rectangle]
+  \inheritanchorborder[from=rectangle]
+
+  \inheritanchor[from=rectangle]{center}
+  \inheritanchor[from=rectangle]{north}
+  \inheritanchor[from=rectangle]{south}
+  \inheritanchor[from=rectangle]{east}
+  \inheritanchor[from=rectangle]{west}
+  \inheritanchor[from=rectangle]{north east}
+  \inheritanchor[from=rectangle]{north west}
+  \inheritanchor[from=rectangle]{south east}
+  \inheritanchor[from=rectangle]{south west}
+  \anchor{start}{
+    \southwest
+    \pgf@xa=\pgf@x
+    \pgf@ya=\pgf@y
+    \northeast
+    \advance\pgf@y by \pgf@ya
+    \pgf@y=.5\pgf@y
+    \pgf@x=\pgf@xa
+    \advance\pgf@x by \operationxsep
+  }
+  \anchor{1}{
+    \southwest
+    \pgf@xa=\pgf@x
+    \pgf@ya=\pgf@y
+    \northeast
+    \advance\pgf@y by \pgf@ya
+    \pgf@y=.5\pgf@y
+    \pgf@x=\pgf@xa
+    \advance\pgf@x by \operationxsep
+    \advance\pgf@x by \operationstep
+  }
+  \anchor{end}{
+    \southwest
+    \pgf@ya=\pgf@y
+    \northeast
+    \advance\pgf@y by \pgf@ya
+    \pgf@y=.5\pgf@y
+    \advance\pgf@x by -\operationxsep
+  }
+}
+
 \tikzset{
   bad execution style/.style={
     draw=alert, pattern=badPattern, pattern color=alert!15, rounded corners,
@@ -74,25 +122,26 @@
       \end{pgfonlayer}
     }
   },
-}
-
-\tikzset{
-  operation/.style={
+  vertical/.style={
+    to path={-- (\tikztostart |- \tikztotarget)\tikztonodes},
+  },
+  horizontal/.style={
+    to path={-- (\tikztotarget |- \tikztostart)\tikztonodes},
+  },
+ operation/.style={
+    shape=operation rectangle,
     draw,
     fill=white,
     draw highlighted,
     fill highlighted,
-    rectangle,
     rounded corners,
     anchor=center,
     align=center,
-    inner xsep=4pt,
-    inner ysep=2pt,
-    outer xsep=-2pt,
-    outer ysep=0pt,
-    minimum height=4mm,
-  },
-  event/.style={
+    inner sep=2pt,
+    outer sep=0pt,
+    minimum height=4.5mm,
+ },
+ event/.style={
     draw,
     fill=white,
     draw highlighted,
@@ -119,21 +168,38 @@
   },
   lin point/.style={
     {Circle[length=2pt,width=2pt]}-{Circle[length=2pt,width=2pt]},
+    densely dotted,
+    thick,
     shorten <=-1pt,
     shorten >=-1pt,
   },
+  process@target/.initial={\tikztotarget},
   every process/.style={
     draw=none,
+    process@target={\tikztotarget},
+    horizontal/.style={
+      process@target={\tikztotarget|-\tikztostart},
+    },
+    vertical/.style={
+      process@target={\tikztostart|-\tikztotarget},
+    },
     to path={
       \pgfextra{
+        \ifx\tikz@strokecolor\pgfutil@empty
+        \colorlet{process@color}{.}
+        \else
+        \colorlet{process@color}{\tikz@strokecolor}
+        \fi
         \begin{pgfonlayer}{process@background}
-          \draw (\tikztostart) -- (\tikztotarget);
+          \draw[draw=process@color] (\tikztostart) -- (\pgfkeysvalueof{/tikz/process@target});
         \end{pgfonlayer}
         \begin{pgfonlayer}{process@foreground}
-          \draw[thin, densely dotted] (\tikztostart) -- (\tikztotarget);
+          \draw[draw=process@color, densely dotted, opacity=.4] (\tikztostart) -- (\pgfkeysvalueof{/tikz/process@target});
+%          \draw[draw=process@color, opacity=.25] (\tikztostart) -- (\pgfkeysvalueof{/tikz/process@target});
+%          \draw[draw=process@color, very thin, densely dotted] (\tikztostart) -- (\pgfkeysvalueof{/tikz/process@target});
         \end{pgfonlayer}
       }
-      (\tikztostart) -- (\tikztotarget)  ([xshift=4pt]\tikztotarget) \tikztonodes
+      (\tikztostart) -- (\pgfkeysvalueof{/tikz/process@target})  ([xshift=4pt]\pgfkeysvalueof{/tikz/process@target}) \tikztonodes
     }
   },
   process/.style={
@@ -166,11 +232,32 @@
   bend below/.default=25,
   bend left/.default=25,
   bend right/.default=25,
+  configuration/.style={
+    draw,
+    rectangle,
+    rounded corners,
+    fill=black!10,
+    draw highlighted,
+    fill highlighted,
+    anchor=center,
+    align=center,
+    inner sep=2pt,
+    outer sep=0pt,
+    very thin,
+    text width=25mm,
+  },
 }
 
 \pgfdeclarelayer{execution@background}
 \pgfdeclarelayer{process@background}
 \pgfdeclarelayer{process@foreground}
 \pgfsetlayers{execution@background, process@background, main, process@foreground}
+
+\newcommand\configurationArray  [1]       {$\begin{array}{@{}r@{~}c@{~}l@{}}#1\end{array}$}
+\newcommand\configurationLine   [4][black]{{\color{#1}{#2}} & {\color{#1}{#3}} & {\color{#1}{#4}} \\}
+\newcommand\configurationProcess[3][black]{\configurationLine[#1]{#2}{:}{#3}}
+\newcommand\configurationData   [3][black]{\configurationLine[#1]{#2}{=}{#3}}
+
+\newcommand\returns{\rightarrow}
 
 \endinput

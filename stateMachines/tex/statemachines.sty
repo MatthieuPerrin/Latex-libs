@@ -230,4 +230,18 @@
 }
 
 
+\tikzset{
+  pics/linked node/.style args={#1}{
+    code={
+      \node[draw, rounded corners, fit=({-.4,-.2})({.4,.2}), inner sep=0pt, outer sep=0pt] (-box) {};
+      \draw (0,-.2) -- (0,.2);
+      \node[fit=({-.4,-.2})({.0,.2}), inner sep=0pt, outer sep=0pt] (-val) {};
+      \node[fit=({ .0,-.2})({.4,.2}), inner sep=0pt, outer sep=0pt] (-ptr) {};
+      \node at (-val) {#1};
+      \node at (-ptr) {$\bullet$};
+    }
+  }
+}
+
+
 \endinput
